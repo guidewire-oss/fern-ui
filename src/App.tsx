@@ -34,7 +34,7 @@ function App() {
                                 resources={[
                                     {
                                         name: "testruns",
-                                        list: "/testruns/",
+                                        list: "/testruns",
                                         show: "/testruns/show/:id",
                                     },
                                 ]}
@@ -63,9 +63,9 @@ function App() {
                                         )}
                                     >
                                         <Route index element={
-                                            <NavigateToResource resource="testruns/"/>
+                                            <NavigateToResource resource="testruns"/>
                                         }/>
-                                        <Route path="/testruns/">
+                                        <Route path="/testruns">
                                             <Route index element={<TestRunsList/>}/>
                                             <Route path="show/:id" element={<TestRunShow/>}/>
                                         </Route>
