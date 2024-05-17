@@ -33,9 +33,9 @@ function App() {
                                 routerProvider={routerBindings}
                                 resources={[
                                     {
-                                        name: "testruns",
-                                        list: "/testruns",
-                                        show: "/testruns/show/:id",
+                                        name: "testrun",
+                                        list: "/query",
+                                        show: "/query/show/:id",
                                     },
                                 ]}
                                 options={{
@@ -63,9 +63,9 @@ function App() {
                                         )}
                                     >
                                         <Route index element={
-                                            <NavigateToResource resource="testruns"/>
+                                            <NavigateToResource resource="testrun"/>
                                         }/>
-                                        <Route path="/testruns">
+                                        <Route path="/query">
                                             <Route index element={<TestRunsList/>}/>
                                             <Route path="show/:id" element={<TestRunShow/>}/>
                                         </Route>

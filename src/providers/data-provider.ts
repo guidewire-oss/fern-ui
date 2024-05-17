@@ -1,27 +1,62 @@
-import type { DataProvider } from "@refinedev/core";
+import type {DataProvider} from "@refinedev/core";
 import axios from "axios";
 
 const API_URL = "http://localhost:8080";
+const GRAPHQL_QUERY_URL = API_URL + "/query";
 
 export const dataProvider: DataProvider = {
-    getList: async ({ resource}) => {
-        const url = `${API_URL}/reports/${resource}`;
+    getList: async ({resource}) => {
+        const testRunsQuery = `
+                query testRuns {
+                  testRuns {
+                    id
+                    testProjectName
+                    testSeed                    
+                  }
+                }`;
 
-        const response = await axios.get(url);
-        return {
-            data: response.data.testRuns,
-            total: response.data.total,
-        };
+        try {
+            const response = await axios.post(GRAPHQL_QUERY_URL, {
+                query: testRunsQuery
+            });
+
+            return {
+                data: response.data.data.testRuns,
+                total: response.data.total,
+            };
+        } catch (error) {
+            console.error('Error fetching data(testRunsQuery):', error);
+            throw error;
+        }
     },
 
     getOne: async ({resource, id}) => {
-        const response = await axios(`${API_URL}/reports/${resource}/${id}`);
+        const testRunByIdQuery = `
+        query testRunById {
+          testRunById(id: ${id}) {
+            id
+            testProjectName
+            testSeed
+            startTime
+            endTime
+          }
+        }`
 
-        if (response.status < 200 || response.status > 299) throw response;
+        try {
+            const response = await axios.post(GRAPHQL_QUERY_URL, {
+                query: testRunByIdQuery
+            });
 
-        const data = await response.data();
+            if (response.status < 200 || response.status > 299) throw response;
 
-        return { data };
+            const data = await response.data();
+
+            return {data};
+
+        } catch (error) {
+            console.error('Error fetching data(testRunByIdQuery):', error);
+            throw error;
+        }
     },
 
     update: () => {
@@ -34,10 +69,4 @@ export const dataProvider: DataProvider = {
         throw new Error("Not implemented");
     },
     getApiUrl: () => API_URL,
-    // Optional methods:
-    // getMany: () => { /* ... */ },
-    // createMany: () => { /* ... */ },
-    // deleteMany: () => { /* ... */ },
-    // updateMany: () => { /* ... */ },
-    // custom: () => { /* ... */ },
 };
