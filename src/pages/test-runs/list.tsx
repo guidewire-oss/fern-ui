@@ -1,9 +1,16 @@
 import {List, useTable,} from "@refinedev/antd";
 import {Space, Table, Tag} from "antd";
 import React from "react";
-import moment from "moment";
 import {HttpError} from "@refinedev/core";
-import {ISpecRun, ITag, ITestRun} from "./interfaces";
+import {ITag, ITestRun} from "./interfaces";
+import {
+    calculateDuration,
+    calculateSpecRuns,
+    expandedRowRender,
+    randomTagColor,
+    testRunsStatus,
+    uniqueTags
+} from "./list-utils";
 
 export const TestRunsList = () => {
     const {tableProps} = useTable<ITestRun, HttpError>({
@@ -11,55 +18,55 @@ export const TestRunsList = () => {
         resource: "testruns/",
     });
 
-    const calculateDuration = (start: moment.MomentInput, end: moment.MomentInput) => {
-        const duration = moment(end).diff(moment(start));
-        return moment.duration(duration).asSeconds().toFixed();
-    };
-    const expandedRowRender = (testRun: ITestRun) => (
-        <>
-            {testRun.suite_runs.map((suiteRun, suiteIndex) =>
-                <Table dataSource={suiteRun.spec_runs.filter(specRun => specRun.status !== 'skipped')}
-                       pagination={false}
-                       key={suiteIndex}>
-                    <Table.Column title="Test Run ID"
-                                  dataIndex="id" key="id"/>
-                    <Table.Column title="Project Name"
-                                  dataIndex="test_project_name" key="test_project_name"
-                                  render={() => testRun.test_project_name}/>
-                    <Table.Column title="Description"
-                                  dataIndex="spec_description" key="spec_description"/>
-                    <Table.Column title="Status"
-                                  dataIndex="status"
-                                  key="status"/>
-                    <Table.Column title="Duration"
-                                  key="duration"
-                                  render={(_text, record: ISpecRun) => calculateDuration(record.start_time, record.end_time)}/>
-                    <Table.Column title="Tags"
-                                  key="tags"
-                                  render={(_text, record: ISpecRun) => (
-                                      <Space>
-                                          {record.tags.map((tag: ITag, tagIndex) => (
-                                              <Tag key={tagIndex}>{tag.name}</Tag>
-                                          ))}
-                                      </Space>
-                                  )}/>
-                    <Table.Column title="Message"
-                                  dataIndex="message"
-                                  key="message"/>
-                </Table>
-            )}
-        </>
-    );
-
     return (
         <List
             title={"Atmos Tests"}
         >
             <Table {...tableProps} rowKey="id" expandable={{expandedRowRender}}>
-                <Table.Column title="ID" dataIndex="id"/>
-                <Table.Column title="Test Project Name" dataIndex="test_project_name"/>
-                <Table.Column title="Duration (seconds)" key={"duration"}
-                              render={(_text, record: ISpecRun) => calculateDuration(record.start_time, record.end_time)}/>
+                <Table.Column title="ID"
+                              dataIndex="id"/>
+                <Table.Column title="Test Project Name"
+                              dataIndex="test_project_name"/>
+                <Table.Column title="Test Suite Name"
+                              key="suite_name"
+                              render={(_text, record: ITestRun) => record.suite_runs.map(suiteRun => suiteRun.suite_name).join(", ")}/>
+                <Table.Column title="Status"
+                              key="status"
+                              width={320}
+                              render={(_text, testRun: ITestRun) => {
+                                  const statusMap = testRunsStatus(testRun);
+                                  return (
+                                      <Space style={{width: '100%', gap: '10px'}}>
+                                          <Tag color="green">{statusMap.get('passed')} Passed</Tag>
+                                          <Tag color="red">{statusMap.get('failed')} Failed</Tag>
+                                          <Tag color="blue">{statusMap.get('skipped')} Skipped</Tag>
+                                      </Space>
+                                  );
+
+                              }}/>
+                <Table.Column title="Spec Runs"
+                              key={"spec_runs"}
+                              render={(_text, testRun: ITestRun) => calculateSpecRuns(testRun)}/>
+                <Table.Column title="Duration"
+                              key="duration"
+                              render={(_text, record: ITestRun) => calculateDuration(record.start_time, record.end_time)}/>
+                <Table.Column title="Tags"
+                              key="tags"
+                              width={500}
+                              render={(_text, record: ITestRun) => (
+                                  <Space style={{minWidth: '200px'}}>
+                                      {
+                                          uniqueTags(record
+                                              .suite_runs
+                                              .flatMap(suiteRun => suiteRun.spec_runs))
+                                              .map((tag: ITag, tagIndex) => (
+                                                  <Tag key={tagIndex} color={randomTagColor()}>
+                                                      {tag.name}
+                                                  </Tag>
+                                              ))
+                                      }
+                                  </Space>
+                              )}/>
             </Table>
         </List>
     );
