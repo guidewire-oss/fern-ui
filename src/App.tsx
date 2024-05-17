@@ -57,6 +57,7 @@ function App() {
                                                 Title={(props) => (
                                                     <ThemedTitleV2 {...props} text={"Fern Reporter"}/>
                                                 )}
+                                                initialSiderCollapsed={true}
                                             >
                                                 <Outlet/>
                                             </ThemedLayoutV2>
