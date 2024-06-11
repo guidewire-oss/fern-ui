@@ -1,6 +1,6 @@
 import {calculateDuration, calculateSpecRuns, testRunsStatus, uniqueTags} from "../../src/pages/test-runs/list-utils";
-import {apiResponse} from "./dataMocks";
-import {ITestRun} from "../../src/pages/test-runs/interfaces";
+import {apiResponse} from "../utils/dataMocks";
+import {ISpecRun, ITestRun} from "../../src/pages/test-runs/interfaces";
 
 // Mock the useTable hook
 jest.mock('@refinedev/antd', () => ({
@@ -11,7 +11,8 @@ jest.mock('@refinedev/antd', () => ({
     })),
 }));
 
-describe('TestRunsList', () => {
+
+describe('TestRunsList Unit Tests', () => {
 
     it('should calculate duration correctly', () => {
         const start = '2021-01-01T00:00:00Z';
@@ -20,17 +21,16 @@ describe('TestRunsList', () => {
     });
 
     it('should return the correct status counts', () => {
-        // @ts-ignore
-        const testRun = apiResponse.testRuns[0] as ITestRun;
+        const testRun = apiResponse.testRuns
         const statusMap = testRunsStatus(testRun);
-        expect(statusMap.get('passed')).toBe(2);
+        expect(statusMap.get('passed')).toBe(1);
         expect(statusMap.get('failed')).toBe(1);
         expect(statusMap.get('skipped')).toBe(1);
     });
 
     it('should return unique tags', () => {
         // @ts-ignore
-        const specRuns = apiResponse.testRuns[0].suite_runs[0].spec_runs;
+        const specRuns = apiResponse.testRuns.suite_runs[0].spec_runs as ISpecRun[];
         const tags = uniqueTags(specRuns);
         expect(tags).toHaveLength(2);
         expect(tags).toEqual([{id: 1, name: 'Tag1'}, {id: 2, name: 'Tag2'}]);
@@ -38,7 +38,7 @@ describe('TestRunsList', () => {
 
     it('should calculate spec runs correctly', () => {
         // @ts-ignore
-        const testRun = apiResponse.testRuns[0];
-        expect(calculateSpecRuns(testRun)).toBe('2/3');
+        const testRun = apiResponse.testRuns;
+        expect(calculateSpecRuns(testRun)).toBe('1/2');
     });
 });
