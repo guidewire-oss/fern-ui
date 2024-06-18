@@ -1,4 +1,4 @@
-import {GitHubBanner, Refine,} from '@refinedev/core';
+import {Refine,} from '@refinedev/core';
 import {DevtoolsPanel, DevtoolsProvider} from "@refinedev/devtools";
 import {RefineKbar, RefineKbarProvider} from "@refinedev/kbar";
 
@@ -15,7 +15,7 @@ import routerBindings, {
 import {ColorModeContextProvider} from "./contexts/color-mode";
 import {Header} from "./components";
 import {dataProvider} from "./providers/data-provider";
-import {TestRunShow, TestRunsList} from "./pages/test-runs";
+import {TestRunsList} from "./pages/test-runs";
 
 
 function App() {
@@ -35,7 +35,6 @@ function App() {
                                     {
                                         name: "testruns",
                                         list: "/testruns",
-                                        show: "/testruns/show/:id",
                                     },
                                 ]}
                                 options={{
@@ -68,7 +67,6 @@ function App() {
                                         }/>
                                         <Route path="/testruns">
                                             <Route index element={<TestRunsList/>}/>
-                                            <Route path="show/:id" element={<TestRunShow/>}/>
                                         </Route>
                                         <Route path="*" element={<ErrorComponent/>}/>
                                     </Route>
