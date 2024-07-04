@@ -1,57 +1,72 @@
 import {List, useTable,} from "@refinedev/antd";
 import {Space, Table, Tag} from "antd";
 import React from "react";
-import moment from "moment";
-
+import {HttpError} from "@refinedev/core";
+import {ITag, ITestRun} from "./interfaces";
+import {
+    calculateDuration,
+    calculateSpecRuns,
+    expandedRowRender,
+    randomTagColor,
+    testRunsStatus,
+    uniqueTags
+} from "./list-utils";
 
 export const TestRunsList = () => {
-    const {tableProps} = useTable({
+    const {tableProps} = useTable<ITestRun, HttpError>({
+        // Should end with a slash to avoid CORS issues
         resource: "testruns/",
     });
 
-    const calculateDuration = (start: moment.MomentInput, end: moment.MomentInput) => {
-        const duration = moment(end).diff(moment(start));
-        return moment.duration(duration).humanize();
-    };
-
     return (
-        <List>
-            <Table {...tableProps} rowKey="id" expandable={{
-                expandedRowRender(testRun) {
-                    return console.log(testRun),
-                        <>
-                            {testRun.suite_runs.map((suiteRun: { spec_runs: any[]; }, suiteIndex: any) => (
-                                suiteRun.spec_runs.map((specRun, specIndex) => (
-                                    <Table key={`suite-${suiteIndex}-spec-${specIndex}`}>
-                                        <Table.Column title="Test Run ID" dataIndex="id"
-                                                      render={() => specRun.id}/>
-                                        <Table.Column title="Project Name" dataIndex="test_project_name"
-                                                      render={() => testRun.test_project_name}/>
-                                        <Table.Column title="Description" dataIndex="spec_description"
-                                                      render={() => specRun.spec_description}/>
-                                        <Table.Column title="Status" dataIndex="status" render={(specRun.status)}/>
-                                        <Table.Column title="Duration"
-                                                      render={() => calculateDuration(specRun.start_time, specRun.end_time)}/>
-                                        {/*<Table.Column title="Tags" dataIndex="tags" render={() => (*/}
-                                        {/*    <Space>*/}
-                                        {/*        {specRun.tags.map((tag, tagIndex) => (*/}
-                                        {/*            <Tag key={tagIndex}>{tag.name}</Tag>*/}
-                                        {/*        ))}*/}
-                                        {/*    </Space>*/}
-                                        {/*)}/>*/}
-                                        <Table.Column title="Message" render={() => specRun.message}/>
-                                    </Table>
-                                ))
-                            ))}
-                        </>;
-                }
-            }}>
-                <Table.Column title="ID" dataIndex="id"/>
-                <Table.Column title="Test Project Name" dataIndex="test_project_name"/>
-                <Table.Column title="Start Time" dataIndex="start_time"
-                              render={(text) => moment(text).format('LLL')}/>
-                <Table.Column title="End Time" dataIndex="end_time"
-                              render={(text) => moment(text).format('LLL')}/>
+        <List
+            title={"Atmos Tests"}
+        >
+            <Table {...tableProps} rowKey="id" expandable={{expandedRowRender}}>
+                <Table.Column title="ID"
+                              dataIndex="id"/>
+                <Table.Column title="Test Project Name"
+                              dataIndex="test_project_name"/>
+                <Table.Column title="Test Suite Name"
+                              key="suite_name"
+                              render={(_text, record: ITestRun) => record.suite_runs.map(suiteRun => suiteRun.suite_name).join(", ")}/>
+                <Table.Column title="Status"
+                              key="status"
+                              width={320}
+                              render={(_text, testRun: ITestRun) => {
+                                  const statusMap = testRunsStatus(testRun);
+                                  return (
+                                      <Space style={{width: '100%', gap: '10px'}}>
+                                          <Tag color="green">{statusMap.get('passed')} Passed</Tag>
+                                          <Tag color="red">{statusMap.get('failed')} Failed</Tag>
+                                          <Tag color="blue">{statusMap.get('skipped')} Skipped</Tag>
+                                      </Space>
+                                  );
+
+                              }}/>
+                <Table.Column title="Spec Runs"
+                              key={"spec_runs"}
+                              render={(_text, testRun: ITestRun) => calculateSpecRuns(testRun)}/>
+                <Table.Column title="Duration"
+                              key="duration"
+                              render={(_text, record: ITestRun) => calculateDuration(record.start_time, record.end_time)}/>
+                <Table.Column title="Tags"
+                              key="tags"
+                              width={500}
+                              render={(_text, record: ITestRun) => (
+                                  <Space style={{minWidth: '200px'}}>
+                                      {
+                                          uniqueTags(record
+                                              .suite_runs
+                                              .flatMap(suiteRun => suiteRun.spec_runs))
+                                              .map((tag: ITag, tagIndex) => (
+                                                  <Tag key={tagIndex} color={randomTagColor()}>
+                                                      {tag.name}
+                                                  </Tag>
+                                              ))
+                                      }
+                                  </Space>
+                              )}/>
             </Table>
         </List>
     );
