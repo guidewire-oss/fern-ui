@@ -46,7 +46,8 @@
     "build": "tsc && refine build",
     "preview": "refine start",
     "refine": "refine",
-    "test": "jest --coverage"
+    "test": "jest --coverage",
+    "start": "NODE_ENV=production refine start"
   },
   "browserslist": {
     "production": [
