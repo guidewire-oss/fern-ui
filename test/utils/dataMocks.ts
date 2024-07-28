@@ -1,6 +1,7 @@
 import {ITestRun} from "../../src/pages/test-runs/interfaces";
+import {IReportSummary} from "../../src/pages/test-summaries/interfaces";
 
-interface IApiResponse {
+interface ITestRunsApiResponse {
     reportHeader: string;
     testRuns: ITestRun;
     total: number;
@@ -56,7 +57,7 @@ const testRun: ITestRun = {
     ]
 }
 
-export const apiResponse: IApiResponse = {
+export const testrunsApiResponse: ITestRunsApiResponse = {
     "reportHeader": "Fern Acceptance Test Report",
     "testRuns": testRun,
     "total": 1
