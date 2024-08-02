@@ -1,7 +1,11 @@
 import type { DataProvider } from "@refinedev/core";
 import axios from "axios";
 
-const API_URL = "http://localhost:8080/api";
+if (!import.meta.env.VITE_FERN_REPORTER_BASE_URL) {
+    console.log('Error: FERN_REPORTER_BASE_URL is not set');
+}
+
+const API_URL = import.meta.env.VITE_FERN_REPORTER_BASE_URL;
 
 export const dataProvider: DataProvider = {
     getList: async ({ resource}) => {

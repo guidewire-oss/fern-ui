@@ -12,6 +12,8 @@ import {
     uniqueTags
 } from "./list-utils";
 
+const HEADER_NAME = import.meta.env.VITE_FERN_REPORTER_HEADER_NAME;
+
 export const TestRunsList = () => {
     const {tableProps} = useTable<ITestRun, HttpError>({
         // Should end with a slash to avoid CORS issues
@@ -20,7 +22,7 @@ export const TestRunsList = () => {
 
     return (
         <List
-            title={"Atmos Tests"}
+            title={HEADER_NAME}
         >
             <Table {...tableProps} rowKey="id" expandable={{expandedRowRender}}>
                 <Table.Column title="ID"

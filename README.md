@@ -38,7 +38,7 @@ Follow the steps below to set up and run Fern-UI.
     yarn install
     ```
 
-3. **Configure API Endpoint**: Update the API endpoint in the [data provider](https://github.com/Guidewire/fern-ui/blob/main/src/providers/data-provider.ts#L4) to point to your running Fern-Reporter instance.
+3. **Configure API Endpoint**: Update `VITE_FERN_REPORTER_BASE_URL` in `.env` to point to your running Fern-Reporter instance (this value is `http://localhost:8080/api` by default).
 
 4. **Start the Application**: Run the front-end instance.
     ```sh
@@ -69,3 +69,5 @@ For more information on setting up the backend,
 refer to the [Fern-Reporter repository](https://github.com/Guidewire/fern-reporter).
 To integrate the client into your Ginkgo test suites,
 visit the [Fern-Ginkgo-Client repository](https://github.com/Guidewire/fern-ginkgo-client).
+
+## Testing
