@@ -2,6 +2,7 @@ import {ISpecRun, ISuiteRun, ITag, ITestRun} from "./interfaces";
 import {Space, Table, Tag} from "antd";
 import React from "react";
 import moment from "moment/moment";
+import uniqolor from 'uniqolor';
 
 export const calculateDuration = (start: moment.MomentInput, end: moment.MomentInput) => {
     const duration = moment(end).diff(moment(start));
@@ -47,8 +48,8 @@ export const uniqueTags = (specRuns: ISpecRun[]) => {
     return tags;
 }
 
-export const randomTagColor = () => {
-    return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+export const generateTagColor = (tag: string) => {
+    return uniqolor(tag).color;
 }
 
 export const calculateSpecRuns = (testRun: ITestRun) => {
@@ -64,6 +65,7 @@ export const calculateSpecRuns = (testRun: ITestRun) => {
 
     return `${passedSpecRuns}/${totalSpecRuns}`;
 }
+
 
 export const expandedRowRender = (testRun: ITestRun) => (
     <>
@@ -88,7 +90,19 @@ export const expandedRowRender = (testRun: ITestRun) => (
                 <Table.Column title="Message"
                               dataIndex="message"
                               key="message"
-                              width={200}/>
+                              width={200}
+                              render={(message: string) => (
+                                  <div>
+                                      <pre style={{
+                                          whiteSpace: "pre",
+                                          overflowX: "auto",
+                                          maxHeight: "500px",
+                                      }}>
+                                         {message}
+                                     </pre>
+                                  </div>
+                              )}
+                />
                 <Table.Column title="Status"
                               key="status"
                               width={100}
@@ -110,7 +124,7 @@ export const expandedRowRender = (testRun: ITestRun) => (
                               render={(_text, record: ISpecRun) => (
                                   <Space>
                                       {record.tags.map((tag: ITag, _) => (
-                                          <Tag color={randomTagColor()} key={tag.id}>{tag.name}</Tag>
+                                          <Tag color={generateTagColor(tag.name)} key={tag.id}>{tag.name}</Tag>
                                       ))}
                                   </Space>
                               )}/>
