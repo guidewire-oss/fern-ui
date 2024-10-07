@@ -13,7 +13,7 @@ export const dataProvider: DataProvider = {
 
         const response = await axios.get(url);
         return {
-            data: response.data.testRuns,
+            data: response.data.testRuns.reverse(),
             total: response.data.total,
         };
     },
