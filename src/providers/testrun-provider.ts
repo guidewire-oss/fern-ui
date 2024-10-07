@@ -5,9 +5,9 @@ if (!import.meta.env.VITE_FERN_REPORTER_BASE_URL) {
     console.log('Error: FERN_REPORTER_BASE_URL is not set');
 }
 
-const API_URL = import.meta.env.VITE_FERN_REPORTER_BASE_URL;
+export const API_URL = import.meta.env.VITE_FERN_REPORTER_BASE_URL;
 
-export const dataProvider: DataProvider = {
+export const testrunProvider: DataProvider = {
     getList: async ({ resource}) => {
         const url = `${API_URL}/reports/${resource}`;
 

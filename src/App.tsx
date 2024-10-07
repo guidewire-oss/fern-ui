@@ -14,9 +14,10 @@ import routerBindings, {
 } from "@refinedev/react-router-v6";
 import {ColorModeContextProvider} from "./contexts/color-mode";
 import {Header} from "./components";
-import {dataProvider} from "./providers/data-provider";
+import {testrunProvider} from "./providers/testrun-provider";
+import {summaryProvider} from "./providers/summary-provider";
 import {TestRunsList} from "./pages/test-runs";
-
+import {TestSummary} from "./pages/test-summaries";
 
 function App() {
 
@@ -28,13 +29,32 @@ function App() {
                     <AntdApp>
                         <DevtoolsProvider>
                             <Refine
-                                dataProvider={dataProvider}
+                                dataProvider={{
+                                    default: testrunProvider,
+                                    testruns: testrunProvider,
+                                    summaries: summaryProvider,
+                                }}
                                 notificationProvider={useNotificationProvider}
                                 routerProvider={routerBindings}
                                 resources={[
                                     {
+                                        name: "Test Reports",
+                                    },
+                                    {
                                         name: "testruns",
                                         list: "/testruns",
+                                        meta: {
+                                            parent: "Test Reports",
+                                            dataProviderName: "testruns",
+                                        },
+                                    },
+                                    {
+                                        name: "summaries",
+                                        list: "/testsummaries",
+                                        meta: {
+                                            parent: "Test Reports",
+                                            dataProviderName: "summaries",
+                                        },
                                     },
                                 ]}
                                 options={{
@@ -67,6 +87,9 @@ function App() {
                                         }/>
                                         <Route path="/testruns">
                                             <Route index element={<TestRunsList/>}/>
+                                        </Route>
+                                        <Route path="/testsummaries">
+                                            <Route index element={<TestSummary />} />
                                         </Route>
                                         <Route path="*" element={<ErrorComponent/>}/>
                                     </Route>

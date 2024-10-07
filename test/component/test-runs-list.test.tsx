@@ -1,4 +1,4 @@
-import {apiResponse} from "../utils/dataMocks";
+import {testrunsApiResponse} from "../utils/dataMocks";
 import {fireEvent, render, screen, waitFor} from "@testing-library/react";
 import React from "react";
 import {TestRunsList} from "../../src/pages/test-runs";
@@ -11,7 +11,7 @@ jest.mock('@refinedev/antd', () => {
         useTable: jest.fn(() => ({
             tableProps: {
                 dataSource: [
-                    apiResponse.testRuns
+                    testrunsApiResponse.testRuns
                 ]
             },
         })),
