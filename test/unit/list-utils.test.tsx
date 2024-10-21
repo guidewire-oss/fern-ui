@@ -1,4 +1,4 @@
-import {calculateDuration, calculateSpecRuns, testRunsStatus, uniqueTags} from "../../src/pages/test-runs/list-utils";
+import {calculateDuration, calculateSpecRuns, generateTagColor, testRunsStatus, uniqueTags} from "../../src/pages/test-runs/list-utils";
 import {testrunsApiResponse} from "../utils/dataMocks";
 import {ISpecRun, ITestRun} from "../../src/pages/test-runs/interfaces";
 
@@ -41,4 +41,17 @@ describe('TestRunsList Unit Tests', () => {
         const testRun = testrunsApiResponse.testRuns;
         expect(calculateSpecRuns(testRun)).toBe('1/2');
     });
+
+    it('should assign consistent colors to the same tags', () => {
+        const tagOne = "acceptance";
+        const tagTwo = "unit";
+        const tagThree = "acceptance";
+
+        const tagOneColor = generateTagColor(tagOne);
+        const tagTwoColor = generateTagColor(tagTwo);
+        const tagThreeColor = generateTagColor(tagThree);
+
+        expect(tagOneColor).toEqual(tagThreeColor);
+        expect(tagTwoColor).not.toEqual(tagOneColor);
+    })
 });

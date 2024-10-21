@@ -7,7 +7,7 @@ import {
     calculateDuration,
     calculateSpecRuns,
     expandedRowRender,
-    randomTagColor,
+    generateTagColor,
     testRunsStatus,
     uniqueTags
 } from "./list-utils";
@@ -52,6 +52,9 @@ export const TestRunsList = () => {
                 <Table.Column title="Duration"
                               key="duration"
                               render={(_text, record: ITestRun) => calculateDuration(record.start_time, record.end_time)}/>
+                <Table.Column title="Date"
+                              key={"date"}
+                              render={(_text, testRun: ITestRun) => new Date(testRun.start_time).toLocaleString() }/>
                 <Table.Column title="Tags"
                               key="tags"
                               width={500}
@@ -62,7 +65,7 @@ export const TestRunsList = () => {
                                               .suite_runs
                                               .flatMap(suiteRun => suiteRun.spec_runs))
                                               .map((tag: ITag, tagIndex) => (
-                                                  <Tag key={tagIndex} color={randomTagColor()}>
+                                                  <Tag key={tagIndex} color={generateTagColor(tag.name)}>
                                                       {tag.name}
                                                   </Tag>
                                               ))
