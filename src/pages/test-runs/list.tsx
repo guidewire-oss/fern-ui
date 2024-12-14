@@ -18,6 +18,9 @@ export const TestRunsList = () => {
     const {tableProps} = useTable<ITestRun, HttpError>({
         // Should end with a slash to avoid CORS issues
         resource: "testruns/",
+        pagination: {
+          mode: "server", // Enables server-side pagination
+        },
     });
 
     return (
@@ -28,10 +31,12 @@ export const TestRunsList = () => {
                 <Table.Column title="ID"
                               dataIndex="id"/>
                 <Table.Column title="Test Project Name"
-                              dataIndex="test_project_name"/>
+                              dataIndex="testProjectName"/>
                 <Table.Column title="Test Suite Name"
-                              key="suite_name"
-                              render={(_text, record: ITestRun) => record.suite_runs.map(suiteRun => suiteRun.suite_name).join(", ")}/>
+                              key="suiteName"
+
+                              render={(_text, record: ITestRun) => record.suiteRuns.map(suiteRun => suiteRun.suiteName).join(", ")}
+                />
                 <Table.Column title="Status"
                               key="status"
                               width={320}
@@ -51,25 +56,25 @@ export const TestRunsList = () => {
                               render={(_text, testRun: ITestRun) => calculateSpecRuns(testRun)}/>
                 <Table.Column title="Duration"
                               key="duration"
-                              render={(_text, record: ITestRun) => calculateDuration(record.start_time, record.end_time)}/>
+                              render={(_text, record: ITestRun) => calculateDuration(record.startTime, record.endTime)}/>
                 <Table.Column title="Date"
                               key={"date"}
-                              render={(_text, testRun: ITestRun) => new Date(testRun.start_time).toLocaleString() }/>
+                              render={(_text, testRun: ITestRun) => new Date(testRun.startTime).toLocaleString() }/>
                 <Table.Column title="Tags"
                               key="tags"
                               width={500}
                               render={(_text, record: ITestRun) => (
                                   <Space style={{minWidth: '200px'}}>
-                                      {
-                                          uniqueTags(record
-                                              .suite_runs
-                                              .flatMap(suiteRun => suiteRun.spec_runs))
-                                              .map((tag: ITag, tagIndex) => (
-                                                  <Tag key={tagIndex} color={generateTagColor(tag.name)}>
-                                                      {tag.name}
-                                                  </Tag>
-                                              ))
-                                      }
+                                      {/*{*/}
+                                      {/*    uniqueTags(record*/}
+                                      {/*        .suite_runs*/}
+                                      {/*        .flatMap(suiteRun => suiteRun.spec_runs))*/}
+                                      {/*        .map((tag: ITag, tagIndex) => (*/}
+                                      {/*            <Tag key={tagIndex} color={generateTagColor(tag.name)}>*/}
+                                      {/*                {tag.name}*/}
+                                      {/*            </Tag>*/}
+                                      {/*        ))*/}
+                                      {/*}*/}
                                   </Space>
                               )}/>
             </Table>

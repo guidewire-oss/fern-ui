@@ -12,16 +12,16 @@ export const calculateDuration = (start: moment.MomentInput, end: moment.MomentI
 export const testRunsStatus = (testRun: ITestRun) => {
     const statusMap = new Map<string, number>();
 
-    const passedSpecRuns = testRun.suite_runs
-        .flatMap(suiteRun => suiteRun.spec_runs)
+    const passedSpecRuns = testRun.suiteRuns
+        .flatMap(suiteRun => suiteRun.specRuns)
         .filter(specRun => specRun.status === 'passed')
         .length;
-    const failedSpecRuns = testRun.suite_runs
-        .flatMap(suiteRun => suiteRun.spec_runs)
+    const failedSpecRuns = testRun.suiteRuns
+        .flatMap(suiteRun => suiteRun.specRuns)
         .filter(specRun => specRun.status === 'failed')
         .length;
-    const skippedSpecRuns = testRun.suite_runs
-        .flatMap(suiteRun => suiteRun.spec_runs)
+    const skippedSpecRuns = testRun.suiteRuns
+        .flatMap(suiteRun => suiteRun.specRuns)
         .filter(specRun => specRun.status === 'skipped')
         .length;
 
@@ -53,13 +53,13 @@ export const generateTagColor = (tag: string) => {
 }
 
 export const calculateSpecRuns = (testRun: ITestRun) => {
-    const totalSpecRuns = testRun.suite_runs
-        .flatMap(suiteRun => suiteRun.spec_runs)
+    const totalSpecRuns = testRun.suiteRuns
+        .flatMap(suiteRun => suiteRun.specRuns)
         .filter(specRun => specRun.status !== 'skipped')
         .length;
 
-    const passedSpecRuns = testRun.suite_runs
-        .flatMap(suiteRun => suiteRun.spec_runs)
+    const passedSpecRuns = testRun.suiteRuns
+        .flatMap(suiteRun => suiteRun.specRuns)
         .filter(specRun => specRun.status === 'passed')
         .length;
 
@@ -69,8 +69,8 @@ export const calculateSpecRuns = (testRun: ITestRun) => {
 
 export const expandedRowRender = (testRun: ITestRun) => (
     <>
-        {testRun.suite_runs.map((suiteRun, suiteIndex) =>
-            <Table dataSource={suiteRun.spec_runs.filter(specRun => specRun.status !== 'skipped')} // Remove skipped tests
+        {testRun.suiteRuns.map((suiteRun, suiteIndex) =>
+            <Table dataSource={suiteRun.specRuns.filter(specRun => specRun.status !== 'skipped')} // Remove skipped tests
                    pagination={false}
                    key={suiteIndex}>
                 rowKey="id"
@@ -82,7 +82,7 @@ export const expandedRowRender = (testRun: ITestRun) => (
                               dataIndex="suite_name"
                               key="suite_name"
                               width={200}
-                              render={() => suiteRun.suite_name}/>
+                              render={() => suiteRun.suiteName}/>
                 <Table.Column title="Spec Description"
                               dataIndex="spec_description"
                               width={400}
@@ -117,7 +117,7 @@ export const expandedRowRender = (testRun: ITestRun) => (
                 <Table.Column title="Duration"
                               key="duration"
                               width={120}
-                              render={(_text, record: ISpecRun) => calculateDuration(record.start_time, record.end_time)}/>
+                              render={(_text, record: ISpecRun) => calculateDuration(record.startTime, record.endTime)}/>
                 <Table.Column title="Tags"
                               key="tags"
                               width={200}
