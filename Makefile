@@ -1,6 +1,6 @@
 PLATFORM_ARCH ?= linux/amd64
 # Go build and run commands
-.PHONY: all build run docker-build docker-run
+.PHONY: all build run docker-build docker-run test
 
 all: build
 
