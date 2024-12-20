@@ -11,6 +11,7 @@ export const calculateDuration = (start: moment.MomentInput, end: moment.MomentI
 
 export const testRunsStatus = (testRun: ITestRun) => {
     const statusMap = new Map<string, number>();
+    console.log("testRun.id",testRun.id)
 
     const passedSpecRuns = testRun.suiteRuns
         .flatMap(suiteRun => suiteRun.specRuns)
@@ -79,12 +80,12 @@ export const expandedRowRender = (testRun: ITestRun) => (
                               width={50}
                               key="id"/>
                 <Table.Column title="Suite Name"
-                              dataIndex="suite_name"
+                              dataIndex="suiteName"
                               key="suite_name"
                               width={200}
                               render={() => suiteRun.suiteName}/>
                 <Table.Column title="Spec Description"
-                              dataIndex="spec_description"
+                              dataIndex="specDescription"
                               width={400}
                               key="spec_description"/>
                 <Table.Column title="Message"
@@ -123,9 +124,9 @@ export const expandedRowRender = (testRun: ITestRun) => (
                               width={200}
                               render={(_text, record: ISpecRun) => (
                                   <Space>
-                                      {record.tags.map((tag: ITag, _) => (
-                                          <Tag color={generateTagColor(tag.name)} key={tag.id}>{tag.name}</Tag>
-                                      ))}
+                                      {/*{record.tags.map((tag: ITag, _) => (*/}
+                                      {/*    <Tag color={generateTagColor(tag.name)} key={tag.id}>{tag.name}</Tag>*/}
+                                      {/*))}*/}
                                   </Space>
                               )}/>
             </Table>

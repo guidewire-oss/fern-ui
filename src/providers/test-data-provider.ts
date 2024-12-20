@@ -2,10 +2,15 @@ import type { DataProvider } from "@refinedev/core";
 import { GraphQLClient } from "graphql-request";
 import { gql } from "graphql-request";
 
-const API_URL = "http://localhost:4000/graphql"; // GraphQL endpoint
+if (!import.meta.env.GRAPH_QL_MOCK_SERVER_URL) {
+    console.error('Error: GRAPH_QL_MOCK_SERVER_URL is not set');
+}
+//const API_URL = "http://localhost:4000/graphql"; // GraphQL endpoint
 
+// GraphQL URL
+export const GRAPHQL_URL = import.meta.env.GRAPH_QL_MOCK_SERVER_URL || "https://localhost:8080/query";
 // Initialize the GraphQL Client
-const client = new GraphQLClient(API_URL);
+const client = new GraphQLClient(GRAPHQL_URL);
 
 const cursorCache: Record<string, string | null> = {};
 
@@ -51,7 +56,6 @@ export const dataProvider: DataProvider = {
                     }
                     pageInfo {
                         hasNextPage
-                        hasPreviousPage
                         startCursor
                         endCursor
                     }
@@ -152,7 +156,7 @@ export const dataProvider: DataProvider = {
     },
 
     // Get the API URL
-    getApiUrl: () => API_URL,
+    getApiUrl: () => GRAPHQL_URL,
 
     // Custom operation (Not implemented)
     custom: async () => {

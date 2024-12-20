@@ -1,7 +1,7 @@
 export interface ITestRun {
     id: number;
-    test_project_name: string;
-    test_seed: number;
+    testProjectName: string;
+    testSeed: number;
     startTime: string;
     endTime: string;
     suiteRuns: ISuiteRun[];
