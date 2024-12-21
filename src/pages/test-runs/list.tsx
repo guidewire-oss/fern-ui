@@ -15,14 +15,16 @@ const HEADER_NAME = import.meta.env.VITE_FERN_REPORTER_HEADER_NAME;
 export const TestRunsList = () => {
     const [data, setData] = useState<ITestRun[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
-    const [hasNextPage, setHasNextPage] = useState<boolean>(true);
-    const [cursor, setCursor] = useState<string | undefined>(undefined);
+    const [page, setPage] = useState<number>(1);
+    const [pageSize, setPageSize] = useState<number>(5);
+    const [total, setTotal] = useState<number>(0);
 
-    const { tableQueryResult, pagination } = useTable<ITestRun, HttpError>({
+    const { tableQueryResult } = useTable<ITestRun, HttpError>({
         resource: "testruns/",
         pagination: {
             mode: "server",
-            pageSize: 5,
+            pageSize: pageSize,
+            current: page,
         },
     });
 
@@ -30,10 +32,9 @@ export const TestRunsList = () => {
         setLoading(true);
         try {
             if (tableQueryResult.data) {
-                const { data, pageInfo } = tableQueryResult.data;
-                setData((prevData) => [...prevData, ...data]);
-                setCursor(pageInfo?.nextCursor);
-                setHasNextPage(pageInfo?.hasNextPage || false);
+                const { data, total } = tableQueryResult.data;
+                setData(data);
+                setTotal(total);
             } else {
                 console.error("No data received from useTable");
             }
@@ -45,16 +46,19 @@ export const TestRunsList = () => {
     };
 
     useEffect(() => {
-        if (tableQueryResult.data) {
-            fetchData();
-        }
-    }, [tableQueryResult.data]);
+        fetchData();
+    }, [tableQueryResult.data, page, pageSize]);
+
+    const handleTableChange = (pagination) => {
+        setPage(pagination.current);
+        setPageSize(pagination.pageSize);
+    };
 
     const handleLoadMore = () => {
-        if (hasNextPage) {
-            fetchData();
-        }
+        setPage((prevPage) => prevPage + 1);
     };
+
+    const hasNextPage = page * pageSize < total;
 
     return (
         <List title={HEADER_NAME}>
@@ -65,18 +69,10 @@ export const TestRunsList = () => {
                     loading={loading}
                     expandable={{ expandedRowRender }}
                     pagination={{
-                        current: pagination?.current || 1,
-                        pageSize: pagination?.pageSize || 5,
-                        total: pagination?.total || 0,
-                        onChange: pagination?.setCurrent,
-                    }}
-                    onPaginationModelChange={(model, details) => {
-                        const lastRow = data?.data[data.data.length - 1];
-                        const next = lastRow?.commit.committer.date;
-                        if (next) {
-                            setNext(next);
-                        }
-                        dataGridProps.onPaginationModelChange?.(model, details);
+                        current: page,
+                        pageSize: pageSize,
+                        total: total,
+                        onChange: handleTableChange,
                     }}
                 >
                     <Table.Column title="ID" dataIndex="id" />
