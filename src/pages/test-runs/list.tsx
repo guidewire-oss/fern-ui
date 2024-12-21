@@ -16,7 +16,7 @@ export const TestRunsList = () => {
     const [data, setData] = useState<ITestRun[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [page, setPage] = useState<number>(1);
-    const [pageSize, setPageSize] = useState<number>(5);
+    const [pageSize, setPageSize] = useState<number>(14);
     const [total, setTotal] = useState<number>(0);
 
     const { tableQueryResult } = useTable<ITestRun, HttpError>({
