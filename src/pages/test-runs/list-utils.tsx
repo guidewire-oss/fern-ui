@@ -11,8 +11,6 @@ export const calculateDuration = (start: moment.MomentInput, end: moment.MomentI
 
 export const testRunsStatus = (testRun: ITestRun) => {
     const statusMap = new Map<string, number>();
-    console.log("testRun.id",testRun.id)
-
     const passedSpecRuns = testRun.suiteRuns
         .flatMap(suiteRun => suiteRun.specRuns)
         .filter(specRun => specRun.status === 'passed')
