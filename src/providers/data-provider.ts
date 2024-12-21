@@ -12,13 +12,16 @@ const cursorCache: Record<string, string | null> = {};
 // Get a paginated list of TestRuns
 export const dataProvider: DataProvider = {
     getList: async ({ resource, meta, pagination }) => {
-        const { pageSize = 10, current = 1} = pagination || {}; // Extract pagination values
+
+        console.log("Inside dataProvider.getList function with:", {resource, meta, pagination});
+        const { pageSize = 10, current = 1 } = pagination || {}; // Extract pagination values
         const first = pageSize; // Number of items per page
 
         // Fetch the cursor from the cache if available
-        let after: string | null = cursorCache[resource] || null;
-
-        console.log("Cached cursor for resource:", resource, after);
+        // let after: string | null = cursorCache[resource] || null;
+         let after: string | null = meta?.cursor|| null;
+        //
+        console.log("Cached cursor for resource:", after);
         // If there is a next cursor in the metadata, use it for pagination
         if (meta?.pageInfo?.next) {
             //after = meta.pageInfo.next || null;
@@ -51,7 +54,6 @@ export const dataProvider: DataProvider = {
                     }
                     pageInfo {
                         hasNextPage
-                        hasPreviousPage
                         startCursor
                         endCursor
                     }
@@ -64,7 +66,7 @@ export const dataProvider: DataProvider = {
             // Log the request variables
             console.log("Request variables:", { first, after });
 
-            const response = await client.request(GET_TEST_RUNS, {
+            const response: any = await client.request(GET_TEST_RUNS, {
                 first,
                 after,
             });
@@ -73,7 +75,7 @@ export const dataProvider: DataProvider = {
             const { pageInfo, totalCount } = response.testRuns;
 
             // Log the response to ensure the data is correct
-            console.log("Response received:", response);
+            console.log("Response received totalCount:", totalCount);
             //console.log("pageInfo received:", pageInfo);
 
             // Map edges to data
@@ -86,17 +88,19 @@ export const dataProvider: DataProvider = {
             cursorCache[resource] = pageInfo.hasNextPage ? pageInfo.endCursor : null;
             // Log pagination object to see its structure
             console.log("Updated cursorCache:", cursorCache);
+            console.log("Updated data:", data);
 
             // Return the paginated data
             return {
                 data,
                 total: totalCount, // Return total count of items
-                pageInfo: {
-                    nextCursor: pageInfo.hasNextPage ? pageInfo.endCursor : undefined,
-                    previousCursor: pageInfo.hasPreviousPage
-                        ? pageInfo.startCursor
-                        : undefined,
-                },
+                cursor: {
+                         next: pageInfo.endCursor,
+                         prev: pageInfo.prevCursor,
+                      }
+                // pageInfo: {
+                //     nextCursor: pageInfo.hasNextPage ? pageInfo.endCursor : undefined,
+                // },
             };
         } catch (error) {
             console.error("Error fetching testRuns:", error);
@@ -104,8 +108,7 @@ export const dataProvider: DataProvider = {
         }
     },
 
-
-// Fetch a single TestRun by ID
+    // Fetch a single TestRun by ID
     getOne: async ({ id }) => {
         const GET_TEST_RUN_BY_ID = gql`
             query GetTestRunById($id: Int!) {
@@ -126,7 +129,7 @@ export const dataProvider: DataProvider = {
         `;
 
         try {
-            const response = await client.request(GET_TEST_RUN_BY_ID, { id });
+            const response: any = await client.request(GET_TEST_RUN_BY_ID, { id });
             const testRun = response.testRunById;
 
             return { data: testRun };

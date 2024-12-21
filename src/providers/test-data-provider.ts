@@ -96,7 +96,7 @@ export const dataProvider: DataProvider = {
                 data,
                 total: totalCount, // Return total count of items
                 pageInfo: {
-                    nextCursor: pageInfo.hasNextPage ? pageInfo.endCursor : undefined,
+                    nextCursor: pageInfo.hasNextPage ? pageInfo.nextCursor : undefined,
                     previousCursor: pageInfo.hasPreviousPage
                         ? pageInfo.startCursor
                         : undefined,
