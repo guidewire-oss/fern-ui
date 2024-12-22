@@ -13,58 +13,98 @@ import {
 const HEADER_NAME = import.meta.env.VITE_FERN_REPORTER_HEADER_NAME;
 
 export const TestRunsList = () => {
-    const [data, setData] = useState<ITestRun[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [page, setPage] = useState<number>(1);
-    const [pageSize, setPageSize] = useState<number>(14);
-    const [total, setTotal] = useState<number>(0);
+    const [data, setData] = useState<ITestRun[]>([]); // Store accumulated data
+    const [loading, setLoading] = useState<boolean>(false); // Loading state
+    const [page, setPage] = useState<number>(1); // Current page
+    const [pageSize, setPageSize] = useState<number>(5); // Items per page
+    const [total, setTotal] = useState<number>(0); // Total items count
+    const [endCursor, setEndCursor] = useState<string>(""); // Cursor for pagination
 
     const { tableQueryResult } = useTable<ITestRun, HttpError>({
         resource: "testruns/",
         pagination: {
-            mode: "server",
+            mode: "server", // Server-side pagination
             pageSize: pageSize,
             current: page,
         },
+        meta: {
+            cursor: {
+                after: endCursor, // Pass cursor to the backend
+            },
+        },
     });
 
+    // Fetch and accumulate data
     const fetchData = async () => {
-        setLoading(true);
+        setLoading(true); // Set loading state
         try {
-            if (tableQueryResult.data) {
-                const { data, total } = tableQueryResult.data;
-                setData(data);
-                setTotal(total);
+            console.log("Fetching data with query result:", tableQueryResult);
+            const result = tableQueryResult?.data || { data: [], total: 0, cursor: {} };
+            const { data: newData, total: totalItems, cursor } = result;
+
+            if (newData?.length) {
+                setData((prevData) => [...prevData, ...newData]); // Append new data
+                setTotal(totalItems || 0); // Update total count
+                setEndCursor(cursor?.next || ""); // Update cursor for the next page
             } else {
-                console.error("No data received from useTable");
+                console.warn("No data received or data is empty.");
             }
         } catch (error) {
             console.error("Error fetching data:", error);
         } finally {
-            setLoading(false);
+            setLoading(false); // Reset loading state
         }
     };
 
+    // Effect to fetch data on component mount or query result change
     useEffect(() => {
         fetchData();
-    }, [tableQueryResult.data, page, pageSize]);
+    }, [tableQueryResult?.data]);
 
-    const handleTableChange = (pagination) => {
-        setPage(pagination.current);
-        setPageSize(pagination.pageSize);
+    // Handle pagination changes
+    const handleTableChange = (pagination: { current: number; pageSize: number }) => {
+        const { current, pageSize } = pagination;
+        setPage(current);
+        setPageSize(pageSize);
+
+        tableQueryResult?.refetch({
+            pagination: {
+                current,
+                pageSize,
+            },
+            meta: {
+                cursor: {
+                    after: endCursor,
+                },
+            },
+        });
     };
 
-    const handleLoadMore = () => {
-        setPage((prevPage) => prevPage + 1);
+    // Handle "Load More" button click
+    const handleLoadMore = async () => {
+        const nextPage = page + 1;
+        setPage(nextPage);
+
+        tableQueryResult?.refetch({
+            pagination: {
+                current: nextPage,
+                pageSize,
+            },
+            meta: {
+                cursor: {
+                    after: endCursor,
+                },
+            },
+        });
     };
 
-    const hasNextPage = page * pageSize < total;
+    const hasNextPage = page * pageSize < total; // Determine if more pages are available
 
     return (
         <List title={HEADER_NAME}>
             <Form>
                 <Table
-                    dataSource={data}
+                    dataSource={data || []}
                     rowKey="id"
                     loading={loading}
                     expandable={{ expandedRowRender }}
