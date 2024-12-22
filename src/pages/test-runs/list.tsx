@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
+import React from "react";
 import { List } from "@refinedev/antd";
 import { Table, Space, Tag, Button } from "antd";
-import { HttpError } from "@refinedev/core";
+import { useInfiniteList } from "@refinedev/core";
 import { ITestRun } from "./interfaces";
-import { dataProvider } from "../../providers/data-provider";
 import {
     calculateDuration,
     calculateSpecRuns,
@@ -14,84 +13,51 @@ import {
 const HEADER_NAME = import.meta.env.VITE_FERN_REPORTER_HEADER_NAME;
 
 export const TestRunsList = () => {
-    const [data, setData] = useState<ITestRun[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [page, setPage] = useState<number>(1);
-    const [pageSize, setPageSize] = useState<number>(5);
-    const [total, setTotal] = useState<number>(0);
-    const [endCursor, setEndCursor] = useState<string>("");
-    const [refetchTrigger, setRefetchTrigger] = useState(0);
-    const endCursorRef = useRef("");
+    const {
+        data,
+        isLoading,
+        isError,
+        fetchNextPage,
+        isFetchingNextPage,
+        hasNextPage,
+    } = useInfiniteList<ITestRun>({
+        resource: "testruns/",
+        pagination: {
+            mode: "server",
+            pageSize: 10,
+        },
+        queryOptions: {
+            getNextPageParam: (lastPage) => {
+                console.log("Cursor Info:", lastPage?.cursor);
+                return lastPage?.cursor?.hasNextPage ? lastPage.cursor.next : undefined;
+            },
+        },
+    });
 
-    // const { tableQueryResult } = useTable<ITestRun, HttpError>({
-    //     resource: "testruns/",
-    //     pagination: {
-    //         mode: "server",
-    //         pageSize: pageSize,
-    //         current: page,
-    //     },
-    //     meta: {
-    //         cursor: {
-    //             after: endCursor,
-    //         },
-    //     },
-    // });
+    // Combine all pages into a single array
+    const allData = data?.pages.flatMap((page) => page.data) || [];
 
-    const fetchData = async () => {
-        setLoading(true);
-        try {
-            console.log("Fetching data for page:", page, "with cursor:", endCursorRef.current);
-
-            const { data, total, cursor } = await dataProvider.getList({
-                resource: "testruns/",
-                meta: { cursor: { after: endCursorRef.current } },
-                pagination: { current: page, pageSize : pageSize},
-            });
-
-            setData(data);
-            setTotal(total);
-            endCursorRef.current = cursor?.next || null;
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchData();
-    }, [page, pageSize]);
-
-    const handleTableChange = (newPage: number, newPageSize: number) => {
-        //const { current, pageSize } = pagination;
-        console.warn("newPage", newPage);
-        setPage(newPage);
-        setPageSize(newPageSize);
-    };
-
-    const hasNextPage = page * pageSize < total;
+    // Error handling
+    if (isError) {
+        return <div>Error loading data</div>;
+    }
 
     return (
         <List title={HEADER_NAME}>
             <Table
-                dataSource={data}
+                dataSource={allData}
                 rowKey="id"
-                loading={loading}
+                loading={isLoading || isFetchingNextPage}
                 expandable={{ expandedRowRender }}
-                pagination={{
-                    current: page,
-                    pageSize: pageSize,
-                    total: total,
-                    onChange: handleTableChange,
-                }}
+                pagination={false} // Disable default table pagination
             >
-                <Table.Column title="ID" dataIndex="id" />
+                <Table.Column title="ID" dataIndex="id" key="id" />
                 <Table.Column title="Test Project Name" dataIndex="testProjectName" />
                 <Table.Column
                     title="Test Suite Name"
                     key="suiteName"
                     render={(_text, record: ITestRun) =>
-                        record.suiteRuns.map((suiteRun) => suiteRun.suiteName).join(", ")
+                        record.suiteRuns?.map((suiteRun) => suiteRun.suiteName).join(", ") || "N/A"
                     }
                 />
                 <Table.Column
@@ -111,7 +77,7 @@ export const TestRunsList = () => {
                 />
                 <Table.Column
                     title="Spec Runs"
-                    key={"spec_runs"}
+                    key="spec_runs"
                     render={(_text, testRun: ITestRun) => calculateSpecRuns(testRun)}
                 />
                 <Table.Column
@@ -123,7 +89,7 @@ export const TestRunsList = () => {
                 />
                 <Table.Column
                     title="Date"
-                    key={"date"}
+                    key="date"
                     render={(_text, testRun: ITestRun) =>
                         new Date(testRun.startTime).toLocaleString()
                     }
@@ -138,12 +104,23 @@ export const TestRunsList = () => {
                                 <Tag key={index} color="blue">
                                     {tag.name}
                                 </Tag>
-                            ))}
+                            )) || <Tag color="default">No Tags</Tag>}
                         </Space>
                     )}
                 />
             </Table>
 
+            {/* Load More Button */}
+            {hasNextPage && (
+                <div style={{ textAlign: "center", margin: "20px 0" }}>
+                    <Button
+                        onClick={fetchNextPage}
+                        disabled={isFetchingNextPage || isLoading}
+                    >
+                        {isFetchingNextPage ? "Loading..." : "Load More"}
+                    </Button>
+                </div>
+            )}
         </List>
     );
 };

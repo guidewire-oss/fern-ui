@@ -52,7 +52,7 @@ export const dataProvider: DataProvider = {
         const first = pageSize; // Number of items per page
 
         // Fetch the cursor from the meta if available
-        const after: string | null = meta?.cursor?.after || null;
+        const after: string | null = meta?.queryContext?.pageParam || null;
         console.log("===================after", after);
         console.log("===================first", first);
 
@@ -128,6 +128,7 @@ export const dataProvider: DataProvider = {
                 cursor: {
                     next: pageInfo.endCursor,
                     prev: pageInfo.startCursor,
+                    hasNextPage: pageInfo.hasNextPage,
                 },
                 // pageInfo: {
                 //     nextCursor: pageInfo.hasNextPage ? pageInfo.endCursor : undefined,
