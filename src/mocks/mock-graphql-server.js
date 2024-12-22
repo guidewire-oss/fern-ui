@@ -104,7 +104,7 @@ const generateMockData = () => {
       }));
 
   // Generate TestRuns
-  return Array.from({ length: 15 }, (_, i) => ({
+  return Array.from({ length: 250 }, (_, i) => ({
     id: i + 1,
     testProjectName: `Project ${i + 1}`,
     testSeed: Math.floor(Math.random() * 10000),

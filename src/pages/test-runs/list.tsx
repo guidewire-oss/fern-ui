@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import { List } from "@refinedev/antd";
 import { Table, Space, Tag, Button } from "antd";
 import { useInfiniteList } from "@refinedev/core";
@@ -24,7 +24,7 @@ export const TestRunsList = () => {
         resource: "testruns/",
         pagination: {
             mode: "server",
-            pageSize: 10,
+            pageSize: 100,
         },
         queryOptions: {
             getNextPageParam: (lastPage) => {
@@ -36,6 +36,22 @@ export const TestRunsList = () => {
 
     // Combine all pages into a single array
     const allData = data?.pages.flatMap((page) => page.data) || [];
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (
+                window.innerHeight + document.documentElement.scrollTop >=
+                document.documentElement.offsetHeight - 500 // Adjust threshold as needed
+            ) {
+                if (hasNextPage && !isFetchingNextPage) {
+                    fetchNextPage();
+                }
+            }
+        };
+
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
     // Error handling
     if (isError) {
@@ -109,18 +125,6 @@ export const TestRunsList = () => {
                     )}
                 />
             </Table>
-
-            {/* Load More Button */}
-            {hasNextPage && (
-                <div style={{ textAlign: "center", margin: "20px 0" }}>
-                    <Button
-                        onClick={fetchNextPage}
-                        disabled={isFetchingNextPage || isLoading}
-                    >
-                        {isFetchingNextPage ? "Loading..." : "Load More"}
-                    </Button>
-                </div>
-            )}
         </List>
     );
 };
