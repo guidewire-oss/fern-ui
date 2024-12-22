@@ -7,25 +7,53 @@ const API_URL = "http://localhost:4000/graphql"; // GraphQL endpoint
 // Initialize the GraphQL Client
 const client = new GraphQLClient(API_URL);
 
-const cursorCache: Record<string, string | null> = {};
+// Define types for the GraphQL response
+interface TestRun {
+    id: string;
+    testProjectName: string;
+    testSeed: string;
+    startTime: string;
+    endTime: string;
+    suiteRuns: {
+        id: string;
+        suiteName: string;
+        startTime: string;
+        endTime: string;
+        specRuns: {
+            id: string;
+            specDescription: string;
+            status: string;
+        }[];
+    }[];
+}
+
+interface PageInfo {
+    hasNextPage: boolean;
+    startCursor: string;
+    endCursor: string;
+}
+
+interface GetTestRunsResponse {
+    testRuns: {
+        edges: {
+            cursor: string;
+            testRun: TestRun;
+        }[];
+        pageInfo: PageInfo;
+        totalCount: number;
+    };
+}
 
 // Get a paginated list of TestRuns
 export const dataProvider: DataProvider = {
     getList: async ({ resource, meta, pagination }) => {
-
-        console.log("Inside dataProvider.getList function with:", {resource, meta, pagination});
+        console.log("Inside dataProvider.getList function with:", { resource, meta, pagination });
         const { pageSize = 10, current = 1 } = pagination || {}; // Extract pagination values
         const first = pageSize; // Number of items per page
 
-        // Fetch the cursor from the cache if available
-        // let after: string | null = cursorCache[resource] || null;
-         let after: string | null = meta?.cursor|| null;
-        //
-        console.log("Cached cursor for resource:", after);
-        // If there is a next cursor in the metadata, use it for pagination
-        if (meta?.pageInfo?.next) {
-            //after = meta.pageInfo.next || null;
-        }
+        // Fetch the cursor from the meta if available
+        const after: string | null = meta?.cursor?.after || null;
+        console.log("===================after", after);
 
         // Define GraphQL query for paginated test runs
         const GET_TEST_RUNS = gql`
@@ -66,7 +94,7 @@ export const dataProvider: DataProvider = {
             // Log the request variables
             console.log("Request variables:", { first, after });
 
-            const response: any = await client.request(GET_TEST_RUNS, {
+            const response: GetTestRunsResponse = await client.request(GET_TEST_RUNS, {
                 first,
                 after,
             });
@@ -76,18 +104,14 @@ export const dataProvider: DataProvider = {
 
             // Log the response to ensure the data is correct
             console.log("Response received totalCount:", totalCount);
-            //console.log("pageInfo received:", pageInfo);
 
             // Map edges to data
-            const data = edges.map((edge: any) => ({
+            const data = edges.map((edge) => ({
                 ...edge.testRun,
                 cursor: edge.cursor, // Include cursor in the data for pagination
             }));
 
-            // Update the cursor cache with the endCursor
-            cursorCache[resource] = pageInfo.hasNextPage ? pageInfo.endCursor : null;
-            // Log pagination object to see its structure
-            console.log("Updated cursorCache:", cursorCache);
+            // Log the updated data
             console.log("Updated data:", data);
 
             // Return the paginated data
@@ -95,12 +119,12 @@ export const dataProvider: DataProvider = {
                 data,
                 total: totalCount, // Return total count of items
                 cursor: {
-                         next: pageInfo.endCursor,
-                         prev: pageInfo.prevCursor,
-                      }
-                // pageInfo: {
-                //     nextCursor: pageInfo.hasNextPage ? pageInfo.endCursor : undefined,
-                // },
+                    next: pageInfo.endCursor,
+                    prev: pageInfo.startCursor,
+                },
+                pageInfo: {
+                    nextCursor: pageInfo.hasNextPage ? pageInfo.endCursor : undefined,
+                },
             };
         } catch (error) {
             console.error("Error fetching testRuns:", error);
