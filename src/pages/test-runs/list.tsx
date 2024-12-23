@@ -2,12 +2,14 @@ import React, {useEffect} from "react";
 import { List } from "@refinedev/antd";
 import { Table, Space, Tag, Button } from "antd";
 import { useInfiniteList } from "@refinedev/core";
-import { ITestRun } from "./interfaces";
+import {ITag, ITestRun} from "./interfaces";
 import {
     calculateDuration,
     calculateSpecRuns,
     expandedRowRender,
     testRunsStatus,
+    uniqueTags,
+    generateTagColor
 } from "./list-utils";
 
 const HEADER_NAME = import.meta.env.VITE_FERN_REPORTER_HEADER_NAME;
@@ -28,7 +30,6 @@ export const TestRunsList = () => {
         },
         queryOptions: {
             getNextPageParam: (lastPage) => {
-                console.log("Cursor Info:", lastPage?.cursor);
                 return lastPage?.cursor?.hasNextPage ? lastPage.cursor.next : undefined;
             },
         },
@@ -66,6 +67,8 @@ export const TestRunsList = () => {
                 loading={isLoading || isFetchingNextPage}
                 expandable={{ expandedRowRender }}
                 pagination={false} // Disable default table pagination
+                expandRowByClick={true}
+
             >
                 <Table.Column title="ID" dataIndex="id" key="id" />
                 <Table.Column title="Test Project Name" dataIndex="testProjectName" />
@@ -115,13 +118,23 @@ export const TestRunsList = () => {
                     key="tags"
                     width={500}
                     render={(_text, record: ITestRun) => (
-                        <Space style={{ minWidth: "200px" }}>
-                            {record.tags?.map((tag, index) => (
-                                <Tag key={index} color="blue">
-                                    {tag.name}
-                                </Tag>
-                            )) || <Tag color="default">No Tags</Tag>}
-                        </Space>
+                        <Table.Column title="Tags"
+                                      key="tags"
+                                      width={500}
+                                      render={(_text, record: ITestRun) => (
+                                          <Space style={{minWidth: '200px'}}>
+                                              {
+                                                  uniqueTags(record
+                                                      .suiteRuns
+                                                      .flatMap(suiteRun => suiteRun.specRuns))
+                                                      .map((tag: ITag, tagIndex) => (
+                                                          <Tag key={tagIndex} color={generateTagColor(tag.name)}>
+                                                              {tag.name}
+                                                          </Tag>
+                                                      ))
+                                              }
+                                          </Space>
+                                      )}/>
                     )}
                 />
             </Table>
