@@ -122,9 +122,9 @@ export const expandedRowRender = (testRun: ITestRun) => (
                               width={200}
                               render={(_text, record: ISpecRun) => (
                                   <Space>
-                                      {/*{record.tags.map((tag: ITag, _) => (*/}
-                                      {/*    <Tag color={generateTagColor(tag.name)} key={tag.id}>{tag.name}</Tag>*/}
-                                      {/*))}*/}
+                                      {record.tags.map((tag: ITag, _) => (
+                                          <Tag color={generateTagColor(tag.name)} key={tag.id}>{tag.name}</Tag>
+                                      ))}
                                   </Space>
                               )}/>
             </Table>

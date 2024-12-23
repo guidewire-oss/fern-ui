@@ -47,14 +47,11 @@ interface GetTestRunsResponse {
 // Get a paginated list of TestRuns
 export const dataProvider: DataProvider = {
     getList: async ({ resource, meta, pagination }) => {
-        console.log("Inside dataProvider.getList function with:", { resource, meta, pagination });
         const { pageSize=5, current = 1 } = pagination || {}; // Extract pagination values
         const first = pageSize; // Number of items per page
 
         // Fetch the cursor from the meta if available
         const after: string | null = meta?.queryContext?.pageParam || null;
-        console.log("===================after", after);
-        console.log("===================first", first);
 
         // Define GraphQL query for paginated test runs
         const GET_TEST_RUNS = gql`
@@ -77,6 +74,10 @@ export const dataProvider: DataProvider = {
                                     id
                                     specDescription
                                     status
+                                    tags{
+                                      id
+                                      name
+                                    }
                                 }
                             }
                         }
@@ -92,21 +93,14 @@ export const dataProvider: DataProvider = {
         `;
 
         try {
-            // Log the request variables
-            console.log("Request variables:", { first, after });
 
             const response: GetTestRunsResponse = await client.request(GET_TEST_RUNS, {
                 first,
                 after,
             });
 
-            console.log("Raw response from GraphQL API:", response); //
-
             const edges = response.testRuns.edges || [];
             const { pageInfo, totalCount } = response.testRuns;
-
-            // Log the response to ensure the data is correct
-            console.log("Response received totalCount:", totalCount);
 
             // Map edges to data
             const data = edges.map((edge) => ({
@@ -114,12 +108,6 @@ export const dataProvider: DataProvider = {
                 id: edge.testRun.id.toString(),
                 cursor: edge.cursor, // Include cursor in the data for pagination
             }));
-
-            // Log the updated data
-            console.log("Updated data:", data);
-
-            console.log("pageInfo.endCursor:", pageInfo.endCursor);
-            console.log("pageInfo.startCursor:", pageInfo.startCursor);
 
             // Return the paginated data
             return {
