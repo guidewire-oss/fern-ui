@@ -1,16 +1,15 @@
-import {calculateDuration, calculateSpecRuns, generateTagColor, testRunsStatus, uniqueTags} from "../../src/pages/test-runs/list-utils";
-import {testrunsApiResponse} from "../utils/dataMocks";
-import {ISpecRun, ITestRun} from "../../src/pages/test-runs/interfaces";
+import { calculateDuration, calculateSpecRuns, generateTagColor, testRunsStatus, uniqueTags } from "../../src/pages/test-runs/list-utils";
+import { testrunsApiResponse } from "../utils/dataMocks";
+import { ISpecRun, ITestRun } from "../../src/pages/test-runs/interfaces";
 
 // Mock the useTable hook
 jest.mock('@refinedev/antd', () => ({
     useTable: jest.fn(() => ({
         tableProps: {
-            dataSource: testrunsApiResponse
+            dataSource: testrunsApiResponse.testRuns.edges.map(edge => edge.testRun),
         },
     })),
 }));
-
 
 describe('TestRunsList Unit Tests', () => {
 
@@ -21,7 +20,7 @@ describe('TestRunsList Unit Tests', () => {
     });
 
     it('should return the correct status counts', () => {
-        const testRun = testrunsApiResponse.testRuns
+        const testRun = testrunsApiResponse.testRuns.edges[0].testRun; // Accessing the correct testRun object
         const statusMap = testRunsStatus(testRun);
         expect(statusMap.get('passed')).toBe(1);
         expect(statusMap.get('failed')).toBe(1);
@@ -29,16 +28,14 @@ describe('TestRunsList Unit Tests', () => {
     });
 
     it('should return unique tags', () => {
-        // @ts-ignore
-        const specRuns = testrunsApiResponse.testRuns.suite_runs[0].spec_runs as ISpecRun[];
+        const specRuns = testrunsApiResponse.testRuns.edges[0].testRun.suiteRuns[0].specRuns as ISpecRun[]; // Corrected specRuns access
         const tags = uniqueTags(specRuns);
         expect(tags).toHaveLength(2);
-        expect(tags).toEqual([{id: 1, name: 'Tag1'}, {id: 2, name: 'Tag2'}]);
+        expect(tags).toEqual([{ id: 1, name: 'Tag1' }, { id: 2, name: 'Tag2' }]);
     });
 
     it('should calculate spec runs correctly', () => {
-        // @ts-ignore
-        const testRun = testrunsApiResponse.testRuns;
+        const testRun = testrunsApiResponse.testRuns.edges[0].testRun; // Accessing the correct testRun object
         expect(calculateSpecRuns(testRun)).toBe('1/2');
     });
 
@@ -53,5 +50,5 @@ describe('TestRunsList Unit Tests', () => {
 
         expect(tagOneColor).toEqual(tagThreeColor);
         expect(tagTwoColor).not.toEqual(tagOneColor);
-    })
+    });
 });

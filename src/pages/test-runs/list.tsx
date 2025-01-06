@@ -1,6 +1,6 @@
 import React, {useEffect} from "react";
 import { List } from "@refinedev/antd";
-import { Table, Space, Tag, Button } from "antd";
+import { Table, Space, Tag } from "antd";
 import { useInfiniteList } from "@refinedev/core";
 import {ITag, ITestRun} from "./interfaces";
 import {
@@ -12,7 +12,7 @@ import {
     generateTagColor
 } from "./list-utils";
 
-const HEADER_NAME = import.meta.env.VITE_FERN_REPORTER_HEADER_NAME;
+const HEADER_NAME = "Fern Acceptance Test Report"//import.meta.env.VITE_FERN_REPORTER_HEADER_NAME;
 
 export const TestRunsList = () => {
     const {
@@ -85,6 +85,8 @@ export const TestRunsList = () => {
                     width={320}
                     render={(_text, testRun: ITestRun) => {
                         const statusMap = testRunsStatus(testRun);
+                        console.log("statusMap during render = ",  testRunsStatus(testRun));
+
                         return (
                             <Space style={{ width: "100%", gap: "10px" }}>
                                 <Tag color="green">{statusMap.get("passed")} Passed</Tag>

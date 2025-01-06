@@ -11,23 +11,28 @@ export const calculateDuration = (start: moment.MomentInput, end: moment.MomentI
 
 export const testRunsStatus = (testRun: ITestRun) => {
     const statusMap = new Map<string, number>();
+    testRun.suiteRuns.forEach(suiteRun => {
+        console.log("suiteRun.specRuns = ", suiteRun.specRuns);
+    });
     const passedSpecRuns = testRun.suiteRuns
         .flatMap(suiteRun => suiteRun.specRuns)
-        .filter(specRun => specRun.status === 'passed')
+        .filter(specRun => specRun.status.toLowerCase() === 'passed')
         .length;
     const failedSpecRuns = testRun.suiteRuns
         .flatMap(suiteRun => suiteRun.specRuns)
-        .filter(specRun => specRun.status === 'failed')
+        .filter(specRun => specRun.status.toLowerCase() === 'failed')
         .length;
     const skippedSpecRuns = testRun.suiteRuns
         .flatMap(suiteRun => suiteRun.specRuns)
-        .filter(specRun => specRun.status === 'skipped')
+        .filter(specRun => specRun.status.toLowerCase() === 'skipped')
         .length;
 
+    console.log(passedSpecRuns, failedSpecRuns, skippedSpecRuns)
     statusMap.set('passed', passedSpecRuns);
     statusMap.set('failed', failedSpecRuns);
     statusMap.set('skipped', skippedSpecRuns);
 
+    console.log("statusMap before returning = ", statusMap);
     return statusMap;
 }
 
