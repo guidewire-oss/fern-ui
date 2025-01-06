@@ -39,6 +39,8 @@ Follow the steps below to set up and run Fern-UI.
     ```
 
 3. **Configure API Endpoint**: Update `VITE_FERN_REPORTER_BASE_URL` in `.env` to point to your running Fern-Reporter instance (this value is `http://localhost:8080/api` by default).
+   To use the graphql endpoint, set `VITE_FERN_REPORTER_GRAPHQL_BASE_URL` in .env. This will value will be `http://localhost:8080/query`. For development and testing, the default value is currently a graphql mock server running locally on port 4000 `http://localhost:4000/graphql`. Running `npm run dev` will automatically run the graphql mock server with test data.
+
 
 4. **Start the Application**: Run the front-end instance.
     ```sh
