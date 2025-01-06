@@ -1,12 +1,20 @@
-import {ITestRun} from "../../src/pages/test-runs/interfaces";
-import {IReportSummary} from "../../src/pages/test-summaries/interfaces";
+import { ITestRun } from "../../src/pages/test-runs/interfaces";
 
 interface ITestRunsApiResponse {
     reportHeader: string;
-    testRuns: ITestRun;
-    total: number;
+    testRuns: {
+        edges: Array<{
+            cursor: string;
+            testRun: ITestRun;
+        }>;
+        pageInfo: {
+            hasNextPage: boolean;
+            startCursor: string | null;
+            endCursor: string | null;
+        };
+        totalCount: number;
+    };
 }
-
 
 const testRun: ITestRun = {
     "id": 1,
@@ -55,11 +63,22 @@ const testRun: ITestRun = {
             ]
         }
     ]
-}
+};
 
 export const testrunsApiResponse: ITestRunsApiResponse = {
     "reportHeader": "Fern Acceptance Test Report",
-    "testRuns": testRun,
-    "total": 1
+    "testRuns": {
+        edges: [
+            {
+                cursor: "1",
+                testRun: testRun,
+            }
+        ],
+        pageInfo: {
+            hasNextPage: false,
+            startCursor: "1",
+            endCursor: "1"
+        },
+        totalCount: 1
+    }
 };
-

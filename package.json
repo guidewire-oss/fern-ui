@@ -26,6 +26,7 @@
     "moment": "^2.30.1",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
+    "react-query": "^3.39.3",
     "react-router-dom": "^6.8.1",
     "uniqolor": "^1.1.1"
   },
@@ -41,6 +42,7 @@
     "@typescript-eslint/eslint-plugin": "^5.57.1",
     "@typescript-eslint/parser": "^5.57.1",
     "@vitejs/plugin-react": "^4.0.0",
+    "concurrently": "^8.2.1",
     "eslint": "^8.38.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.3.4",
@@ -52,8 +54,7 @@
     "msw": "^2.7.0",
     "ts-jest": "^29.1.4",
     "typescript": "^4.7.4",
-    "vite": "^4.3.1",
-    "concurrently": "^8.2.1"
+    "vite": "^4.3.1"
   },
   "scripts": {
     "dev": "concurrently \"refine dev\" \"npm run mockgraphql\"",
