@@ -44,7 +44,7 @@ const typeDefs = `
   }
 
   type Query {
-    testRuns(first: Int, after: String): TestRunConnection!
+    testRuns(first: Int, after: String, desc: Boolean): TestRunConnection!
     testRun(testRunFilter: TestRunFilter!): [TestRun!]!
     testRunById(id: Int!): TestRun
   }
@@ -87,8 +87,8 @@ const generateMockData = () => {
         specDescription: `Spec description ${i + 1} for suite ${suiteId}`,
         status: i % 2 === 0 ? "PASSED" : "FAILED",
         message: i % 2 === 0 ? "Executed successfully" : "Error occurred",
-        startTime: `2024-06-01T10:0${i}:00Z`,
-        endTime: `2024-06-01T10:0${i + 1}:00Z`,
+        startTime: `2025-01-01T10:0${i}:00Z`,
+        endTime: `2025-01-01T10:0${i + 1}:00Z`,
         tags: [tags[Math.floor(Math.random() * tags.length)]],
       }));
 
@@ -98,8 +98,8 @@ const generateMockData = () => {
         id: i + 1,
         testRunId,
         suiteName: `Suite ${i + 1} for TestRun ${testRunId}`,
-        startTime: `2024-06-01T10:00:00Z`,
-        endTime: `2024-06-01T10:30:00Z`,
+        startTime: `2025-01-01T10:00:00Z`,
+        endTime: `2025-01-01T10:30:00Z`,
         specRuns: generateSpecRuns(i + 1),
       }));
 
@@ -108,8 +108,8 @@ const generateMockData = () => {
     id: i + 1,
     testProjectName: `Project ${i + 1}`,
     testSeed: Math.floor(Math.random() * 10000),
-    startTime: `2024-06-01T09:00:00Z`,
-    endTime: `2024-06-01T11:00:00Z`,
+    startTime: `2025-01-01T09:00:00Z`,
+    endTime: `2025-01-01T10:00:00Z`,
     suiteRuns: generateSuiteRuns(i + 1),
   }));
 };
@@ -120,17 +120,21 @@ const testRuns = generateMockData();
 // Resolvers
 const resolvers = {
   Query: {
-    testRuns: (_, { first, after }) => {
-      // Default values for first and after
+    testRuns: (_, { first, after, desc }) => {
       const limit = first || 10;
       const cursor = after ? parseInt(after, 10) : 0;
 
+      // Sort testRuns based on 'desc' argument using 'id'
+      const sortedData = desc
+          ? [...testRuns].sort((a, b) => b.id - a.id)  // Descending order by id
+          : [...testRuns].sort((a, b) => a.id - b.id); // Ascending order by id
+
       // Slice data based on pagination arguments
-      const slicedData = testRuns.slice(cursor, cursor + limit);
+      const slicedData = sortedData.slice(cursor, cursor + limit);
 
       // Create edges
       const edges = slicedData.map((item, index) => ({
-        cursor: String(cursor + index + 1), // Cursor for each record
+        cursor: String(cursor + index + 1),
         testRun: item,
       }));
 
@@ -142,14 +146,15 @@ const resolvers = {
         edges,
         pageInfo: {
           hasNextPage,
-          endCursor, // Always return a valid string
           startCursor: edges.length > 0 ? String(cursor + 1) : String(cursor),
+          endCursor,
         },
         totalCount: testRuns.length,
       };
     },
   },
 };
+
 
 
 

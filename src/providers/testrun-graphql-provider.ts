@@ -2,7 +2,15 @@ import type { DataProvider } from "@refinedev/core";
 import { GraphQLClient } from "graphql-request";
 import { gql } from "graphql-request";
 
-const API_URL = "http://localhost:4000/graphql"; // GraphQL endpoint
+// Check if the environment variable is set
+const VITE_FERN_REPORTER_GRAPHQL_BASE_URL = import.meta.env.VITE_FERN_REPORTER_GRAPHQL_BASE_URL;
+
+if (!VITE_FERN_REPORTER_GRAPHQL_BASE_URL) {
+    console.error('Error: VITE_FERN_REPORTER_GRAPHQL_BASE_URL is not set');
+    throw new Error('VITE_FERN_REPORTER_GRAPHQL_BASE_URL must be set in the environment variables.');
+}
+
+const API_URL = VITE_FERN_REPORTER_GRAPHQL_BASE_URL;
 
 // Initialize the GraphQL Client
 const client = new GraphQLClient(API_URL);
@@ -45,18 +53,19 @@ interface GetTestRunsResponse {
 }
 
 // Get a paginated list of TestRuns
-export const dataProvider: DataProvider = {
+export const graphqlDataProvider: DataProvider = {
     getList: async ({ resource, meta, pagination }) => {
         const { pageSize=5, current = 1 } = pagination || {}; // Extract pagination values
         const first = pageSize; // Number of items per page
+        const desc=true;
 
         // Fetch the cursor from the meta if available
         const after: string | null = meta?.queryContext?.pageParam || null;
 
         // Define GraphQL query for paginated test runs
         const GET_TEST_RUNS = gql`
-            query GetTestRuns($first: Int, $after: String) {
-                testRuns(first: $first, after: $after) {
+            query GetTestRuns($first: Int, $after: String, $desc: Boolean) {
+                testRuns(first: $first, after: $after, desc: $desc) {
                     edges {
                         cursor
                         testRun {
@@ -97,6 +106,7 @@ export const dataProvider: DataProvider = {
             const response: GetTestRunsResponse = await client.request(GET_TEST_RUNS, {
                 first,
                 after,
+                desc,
             });
 
             const edges = response.testRuns.edges || [];

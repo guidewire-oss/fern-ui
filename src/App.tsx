@@ -14,7 +14,7 @@ import routerBindings, {
 } from "@refinedev/react-router-v6";
 import {ColorModeContextProvider} from "./contexts/color-mode";
 import {Header} from "./components";
-import {dataProvider} from "./providers/data-provider";
+import {graphqlDataProvider} from "./providers/testrun-graphql-provider";
 import {summaryProvider} from "./providers/summary-provider";
 import {TestRunsList} from "./pages/test-runs";
 import {TestSummary} from "./pages/test-summaries";
@@ -30,8 +30,8 @@ function App() {
                         <DevtoolsProvider>
                             <Refine
                                 dataProvider={{
-                                    default: dataProvider,
-                                    testruns: dataProvider,
+                                    default: graphqlDataProvider,
+                                    testruns: graphqlDataProvider,
                                     summaries: summaryProvider,
                                 }}
                                 notificationProvider={useNotificationProvider}
