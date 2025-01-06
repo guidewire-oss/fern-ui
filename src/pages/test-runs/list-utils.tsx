@@ -16,15 +16,15 @@ export const testRunsStatus = (testRun: ITestRun) => {
     });
     const passedSpecRuns = testRun.suiteRuns
         .flatMap(suiteRun => suiteRun.specRuns)
-        .filter(specRun => specRun.status.toLowerCase() === 'passed')
+        .filter(specRun => specRun.status.toLowerCase() == 'passed')
         .length;
     const failedSpecRuns = testRun.suiteRuns
         .flatMap(suiteRun => suiteRun.specRuns)
-        .filter(specRun => specRun.status.toLowerCase() === 'failed')
+        .filter(specRun => specRun.status.toLowerCase() == 'failed')
         .length;
     const skippedSpecRuns = testRun.suiteRuns
         .flatMap(suiteRun => suiteRun.specRuns)
-        .filter(specRun => specRun.status.toLowerCase() === 'skipped')
+        .filter(specRun => specRun.status.toLowerCase() == 'skipped')
         .length;
 
     console.log(passedSpecRuns, failedSpecRuns, skippedSpecRuns)

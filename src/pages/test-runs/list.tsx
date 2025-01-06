@@ -85,13 +85,11 @@ export const TestRunsList = () => {
                     width={320}
                     render={(_text, testRun: ITestRun) => {
                         const statusMap = testRunsStatus(testRun);
-                        console.log("statusMap during render = ",  testRunsStatus(testRun));
-
                         return (
                             <Space style={{ width: "100%", gap: "10px" }}>
-                                <Tag color="green">{statusMap.get("passed")} Passed</Tag>
-                                <Tag color="red">{statusMap.get("failed")} Failed</Tag>
-                                <Tag color="blue">{statusMap.get("skipped")} Skipped</Tag>
+                                <Tag color="green">{statusMap.get("passed") || 0} Passed</Tag>
+                                <Tag color="red">{statusMap.get("failed") || 0} Failed</Tag>
+                                <Tag color="blue">{statusMap.get("skipped") || 0 } Skipped</Tag>
                             </Space>
                         );
                     }}
@@ -124,8 +122,11 @@ export const TestRunsList = () => {
                                       key="tags"
                                       width={500}
                                       render={(_text, record: ITestRun) => (
+
                                           <Space style={{minWidth: '200px'}}>
+
                                               {
+
                                                   uniqueTags(record
                                                       .suiteRuns
                                                       .flatMap(suiteRun => suiteRun.specRuns))
