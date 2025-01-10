@@ -25,31 +25,31 @@ const TestHistoryGrid: React.FC<{ projectName: string }> = ({ projectName }) => 
 
     const renderListItem = (item: any, index: number) => {
         return (
-            <List.Item style={{ marginBlockEnd: 4 }}>
-                <Popover
-                    content={
-                        <>
-                            <div> <b>Passed: </b>
-                                {item.TotalSpecRuns - item.TotalSkippedSpecRuns > 0 ? (
-                                    <> {item.TotalPassedSpecRuns}/{item.TotalSpecRuns - item.TotalSkippedSpecRuns}
-                                        {" "}
-                                        ({(100 * item.TotalPassedSpecRuns / (item.TotalSpecRuns - item.TotalSkippedSpecRuns)).toFixed(2)}%) </>
-                                ) : (' N/A - no valid tests')}
-                                {item.TotalSkippedSpecRuns !== 0 && (
-                                    <div><b>{item.TotalSkippedSpecRuns}</b> specs skipped</div>
-                                )}
-                                <div> {new Date(item.StartTime).toLocaleString()} </div>
-                            </div>
-                        </>
-                    }
-                    key={item.SuiteRunID}
-                    style={{marginRight: '10px'}}
-                >
-                    <div style={getBoxStyle(item)}
-                         onClick={() => window.open('/testruns/', '_blank')}>
-                    </div>
-                </Popover>
-            </List.Item>
+            <List.Item>
+            <Popover
+                content={
+                    <>
+                        <div> <b>Passed: </b>
+                            {item.TotalSpecRuns - item.TotalSkippedSpecRuns > 0 ? (
+                                <> {item.TotalPassedSpecRuns}/{item.TotalSpecRuns - item.TotalSkippedSpecRuns}
+                                    {" "}
+                                    ({(100 * item.TotalPassedSpecRuns / (item.TotalSpecRuns - item.TotalSkippedSpecRuns)).toFixed(2)}%) </>
+                            ) : (' N/A - no valid tests')}
+                            {item.TotalSkippedSpecRuns !== 0 && (
+                                <div><b>{item.TotalSkippedSpecRuns}</b> specs skipped</div>
+                            )}
+                            <div> {new Date(item.StartTime).toLocaleString()} </div>
+                        </div>
+                    </>
+                }
+                key={item.SuiteRunID}
+                style={{marginRight: '10px'}}
+            >
+                <div style={getBoxStyle(item)}
+                     onClick={() => window.open('/testruns/', '_blank')}>
+                </div>
+            </Popover>
+                </List.Item>
         );
     };
 
@@ -68,12 +68,12 @@ const TestHistoryGrid: React.FC<{ projectName: string }> = ({ projectName }) => 
                 </Button>
             </div>
             <List
-                grid={{ gutter: 4, column: 70 }}
+                grid={{ gutter: 5, column: 40 }}
                 {...listProps}
                 renderItem={renderListItem}
                 pagination={{
-                    defaultPageSize: 100,
-                    pageSizeOptions: [100, 200, 300, 400],
+                    // ...listProps.pagination,
+                    defaultPageSize: 40,
                     position: "bottom",
                     size: "small",
                 }}
