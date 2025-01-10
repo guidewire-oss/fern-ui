@@ -68,7 +68,7 @@ const TestHistoryGrid: React.FC<{ projectName: string }> = ({ projectName }) => 
                 </Button>
             </div>
             <List
-                grid={{ gutter: 5, column: 40 }}
+                grid={{ gutter: 5, column: 50 }}
                 {...listProps}
                 renderItem={renderListItem}
                 pagination={{
