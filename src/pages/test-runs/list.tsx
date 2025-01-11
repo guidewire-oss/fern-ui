@@ -12,7 +12,7 @@ import {
     generateTagColor
 } from "./list-utils";
 
-const HEADER_NAME = "Fern Acceptance Test Report"//import.meta.env.VITE_FERN_REPORTER_HEADER_NAME;
+const HEADER_NAME = "Fern Acceptance Test Report";//import.meta.env.VITE_FERN_REPORTER_HEADER_NAME;
 
 export const TestRunsList = () => {
     const {
@@ -26,7 +26,7 @@ export const TestRunsList = () => {
         resource: "testruns/",
         pagination: {
             mode: "server",
-            pageSize: 100,
+            pageSize: 2,
         },
         queryOptions: {
             getNextPageParam: (lastPage) => {
@@ -40,9 +40,11 @@ export const TestRunsList = () => {
 
     useEffect(() => {
         const handleScroll = () => {
+            console.log(window.innerHeight + document.documentElement.scrollTop);
+            console.log(document.documentElement.offsetHeight);
             if (
                 window.innerHeight + document.documentElement.scrollTop >=
-                document.documentElement.offsetHeight - 500 // Adjust threshold as needed
+                document.documentElement.offsetHeight - 100 // Adjust threshold as needed
             ) {
                 if (hasNextPage && !isFetchingNextPage) {
                     fetchNextPage();
@@ -54,7 +56,6 @@ export const TestRunsList = () => {
         return () => window.removeEventListener("scroll", handleScroll);
     }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-    // Error handling
     if (isError) {
         return <div>Error loading data</div>;
     }
@@ -113,32 +114,23 @@ export const TestRunsList = () => {
                         new Date(testRun.startTime).toLocaleString()
                     }
                 />
-                <Table.Column
-                    title="Tags"
-                    key="tags"
-                    width={500}
-                    render={(_text, record: ITestRun) => (
-                        <Table.Column title="Tags"
-                                      key="tags"
-                                      width={500}
-                                      render={(_text, record: ITestRun) => (
-
-                                          <Space style={{minWidth: '200px'}}>
-
-                                              {
-
-                                                  uniqueTags(record
-                                                      .suiteRuns
-                                                      .flatMap(suiteRun => suiteRun.specRuns))
-                                                      .map((tag: ITag, tagIndex) => (
-                                                          <Tag key={tagIndex} color={generateTagColor(tag.name)}>
-                                                              {tag.name}
-                                                          </Tag>
-                                                      ))
-                                              }
-                                          </Space>
-                                      )}/>
-                    )}
+                <Table.Column title="Tags"
+                              key="tags"
+                              width={500}
+                              render={(_text, record: ITestRun) => (
+                                  <Space style={{minWidth: '200px'}}>
+                                      {
+                                          uniqueTags(record
+                                              .suiteRuns
+                                              .flatMap(suiteRun => suiteRun.specRuns))
+                                              .map((tag: ITag, tagIndex) => (
+                                                  <Tag key={tagIndex} color={generateTagColor(tag.name)}>
+                                                      {tag.name}
+                                                  </Tag>
+                                              ))
+                                      }
+                                  </Space>
+                              )}
                 />
             </Table>
         </List>

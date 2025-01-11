@@ -1,6 +1,7 @@
 import type { DataProvider } from "@refinedev/core";
 import { GraphQLClient } from "graphql-request";
 import { gql } from "graphql-request";
+import { GET_TEST_RUNS, GET_TEST_RUN_BY_ID } from "../pages/test-runs/graphqlQueries";
 
 // Check if the environment variable is set
 const VITE_FERN_REPORTER_GRAPHQL_BASE_URL = import.meta.env.VITE_FERN_REPORTER_GRAPHQL_BASE_URL;
@@ -11,6 +12,11 @@ if (!VITE_FERN_REPORTER_GRAPHQL_BASE_URL) {
 }
 
 const API_URL = VITE_FERN_REPORTER_GRAPHQL_BASE_URL;
+const TestRunsSortOrder = {
+    ASCENDING: false,
+    DESCENDING: true,
+};
+
 
 // Initialize the GraphQL Client
 const client = new GraphQLClient(API_URL);
@@ -57,56 +63,17 @@ export const graphqlDataProvider: DataProvider = {
     getList: async ({ resource, meta, pagination }) => {
         const { pageSize=5, current = 1 } = pagination || {}; // Extract pagination values
         const first = pageSize; // Number of items per page
-        const desc=true;
+        const isDescendingOrder = TestRunsSortOrder.DESCENDING;
 
         // Fetch the cursor from the meta if available
         const after: string | null = meta?.queryContext?.pageParam || null;
-
-        // Define GraphQL query for paginated test runs
-        const GET_TEST_RUNS = gql`
-            query GetTestRuns($first: Int, $after: String, $desc: Boolean) {
-                testRuns(first: $first, after: $after, desc: $desc) {
-                    edges {
-                        cursor
-                        testRun {
-                            id
-                            testProjectName
-                            testSeed
-                            startTime
-                            endTime
-                            suiteRuns {
-                                id
-                                suiteName
-                                startTime
-                                endTime
-                                specRuns {
-                                    id
-                                    specDescription
-                                    status
-                                    tags{
-                                      id
-                                      name
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    pageInfo {
-                        hasNextPage
-                        startCursor
-                        endCursor
-                    }
-                    totalCount
-                }
-            }
-        `;
 
         try {
 
             const response: GetTestRunsResponse = await client.request(GET_TEST_RUNS, {
                 first,
                 after,
-                desc,
+                isDescendingOrder,
             });
 
             const edges = response.testRuns.edges || [];
@@ -128,9 +95,6 @@ export const graphqlDataProvider: DataProvider = {
                     prev: pageInfo.startCursor,
                     hasNextPage: pageInfo.hasNextPage,
                 },
-                // pageInfo: {
-                //     nextCursor: pageInfo.hasNextPage ? pageInfo.endCursor : undefined,
-                // },
             };
         } catch (error) {
             console.error("Error fetching testRuns:", error);
@@ -140,24 +104,6 @@ export const graphqlDataProvider: DataProvider = {
 
     // Fetch a single TestRun by ID
     getOne: async ({ id }) => {
-        const GET_TEST_RUN_BY_ID = gql`
-            query GetTestRunById($id: Int!) {
-                testRunById(id: $id) {
-                    id
-                    testProjectName
-                    testSeed
-                    startTime
-                    endTime
-                    suiteRuns {
-                        id
-                        suiteName
-                        startTime
-                        endTime
-                    }
-                }
-            }
-        `;
-
         try {
             const response: any = await client.request(GET_TEST_RUN_BY_ID, { id });
             const testRun = response.testRunById;
