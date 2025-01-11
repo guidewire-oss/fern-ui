@@ -12,7 +12,7 @@ import {
     generateTagColor
 } from "./list-utils";
 
-const HEADER_NAME = "Fern Acceptance Test Report";//import.meta.env.VITE_FERN_REPORTER_HEADER_NAME;
+const HEADER_NAME = import.meta.env.VITE_FERN_REPORTER_HEADER_NAME;
 
 export const TestRunsList = () => {
     const {
