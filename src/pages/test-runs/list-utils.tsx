@@ -54,12 +54,12 @@ export const generateTagColor = (tag: string) => {
 export const calculateSpecRuns = (testRun: ITestRun) => {
     const totalSpecRuns = testRun.suiteRuns
         .flatMap(suiteRun => suiteRun.specRuns)
-        .filter(specRun => specRun.status !== 'skipped')
+        .filter(specRun => specRun.status.toLowerCase() !== 'skipped')
         .length;
 
     const passedSpecRuns = testRun.suiteRuns
         .flatMap(suiteRun => suiteRun.specRuns)
-        .filter(specRun => specRun.status === 'passed')
+        .filter(specRun => specRun.status.toLowerCase() === 'passed')
         .length;
 
     return `${passedSpecRuns}/${totalSpecRuns}`;
@@ -69,7 +69,7 @@ export const calculateSpecRuns = (testRun: ITestRun) => {
 export const expandedRowRender = (testRun: ITestRun) => (
     <>
         {testRun.suiteRuns.map((suiteRun, suiteIndex) =>
-            <Table dataSource={suiteRun.specRuns.filter(specRun => specRun.status !== 'skipped')} // Remove skipped tests
+            <Table dataSource={suiteRun.specRuns.filter(specRun => specRun.status.toLowerCase() !== 'skipped')} // Remove skipped tests
                    pagination={false}
                    key={suiteIndex}>
                 rowKey="id"
