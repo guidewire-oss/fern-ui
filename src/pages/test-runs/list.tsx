@@ -26,7 +26,7 @@ export const TestRunsList = () => {
         resource: "testruns/",
         pagination: {
             mode: "server",
-            pageSize: 2,
+            pageSize: 100,
         },
         queryOptions: {
             getNextPageParam: (lastPage) => {
