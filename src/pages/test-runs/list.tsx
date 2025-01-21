@@ -17,7 +17,6 @@ const HEADER_NAME = import.meta.env.VITE_FERN_REPORTER_HEADER_NAME;
 export const TestRunsList = () => {
     const {
         data,
-        isLoading,
         isError,
         fetchNextPage,
         isFetchingNextPage,
@@ -26,7 +25,7 @@ export const TestRunsList = () => {
         resource: "testruns/",
         pagination: {
             mode: "server",
-            pageSize: 100,
+            pageSize: 250,
         },
         queryOptions: {
             getNextPageParam: (lastPage) => {
@@ -38,10 +37,15 @@ export const TestRunsList = () => {
     // Combine all pages into a single array
     const allData = data?.pages.flatMap((page) => page.data) || [];
 
+    const debounce = (func: { (): void; apply?: any; }, wait: number | undefined) => {
+        let timeout: string | number | NodeJS.Timeout | undefined;
+        return function (...args: any) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    };
     useEffect(() => {
         const handleScroll = () => {
-            console.log(window.innerHeight + document.documentElement.scrollTop);
-            console.log(document.documentElement.offsetHeight);
             if (
                 window.innerHeight + document.documentElement.scrollTop >=
                 document.documentElement.offsetHeight - 100 // Adjust threshold as needed
@@ -52,8 +56,11 @@ export const TestRunsList = () => {
             }
         };
 
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
+        const debouncedHandleScroll = debounce(handleScroll, 250); // Adjust debounce time as needed
+
+        window.addEventListener("scroll", debouncedHandleScroll);
+        return () => window.removeEventListener("scroll", debouncedHandleScroll);
+
     }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
     if (isError) {
@@ -65,7 +72,7 @@ export const TestRunsList = () => {
             <Table
                 dataSource={allData}
                 rowKey="id"
-                loading={isLoading || isFetchingNextPage}
+                loading={isFetchingNextPage}
                 expandable={{ expandedRowRender }}
                 pagination={false} // Disable default table pagination
                 expandRowByClick={true}
