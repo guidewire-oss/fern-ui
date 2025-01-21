@@ -19,7 +19,6 @@ export const TestRunsList = () => {
         data,
         isError,
         fetchNextPage,
-        isFetchingNextPage,
         hasNextPage,
     } = useInfiniteList<ITestRun>({
         resource: "testruns/",
@@ -50,7 +49,7 @@ export const TestRunsList = () => {
                 window.innerHeight + document.documentElement.scrollTop >=
                 document.documentElement.offsetHeight - 100 // Adjust threshold as needed
             ) {
-                if (hasNextPage && !isFetchingNextPage) {
+                if (hasNextPage) {
                     fetchNextPage();
                 }
             }
@@ -61,7 +60,7 @@ export const TestRunsList = () => {
         window.addEventListener("scroll", debouncedHandleScroll);
         return () => window.removeEventListener("scroll", debouncedHandleScroll);
 
-    }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+    }, [fetchNextPage, hasNextPage]);
 
     if (isError) {
         return <div>Error loading data</div>;
@@ -72,7 +71,6 @@ export const TestRunsList = () => {
             <Table
                 dataSource={allData}
                 rowKey="id"
-                loading={isFetchingNextPage}
                 expandable={{ expandedRowRender }}
                 pagination={false} // Disable default table pagination
                 expandRowByClick={true}
