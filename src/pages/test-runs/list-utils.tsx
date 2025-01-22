@@ -11,18 +11,17 @@ export const calculateDuration = (start: moment.MomentInput, end: moment.MomentI
 
 export const testRunsStatus = (testRun: ITestRun) => {
     const statusMap = new Map<string, number>();
-
-    const passedSpecRuns = testRun.suite_runs
-        .flatMap(suiteRun => suiteRun.spec_runs)
-        .filter(specRun => specRun.status === 'passed')
+    const passedSpecRuns = testRun.suiteRuns
+        .flatMap(suiteRun => suiteRun.specRuns)
+        .filter(specRun => specRun.status.toLowerCase() == 'passed')
         .length;
-    const failedSpecRuns = testRun.suite_runs
-        .flatMap(suiteRun => suiteRun.spec_runs)
-        .filter(specRun => specRun.status === 'failed')
+    const failedSpecRuns = testRun.suiteRuns
+        .flatMap(suiteRun => suiteRun.specRuns)
+        .filter(specRun => specRun.status.toLowerCase() == 'failed')
         .length;
-    const skippedSpecRuns = testRun.suite_runs
-        .flatMap(suiteRun => suiteRun.spec_runs)
-        .filter(specRun => specRun.status === 'skipped')
+    const skippedSpecRuns = testRun.suiteRuns
+        .flatMap(suiteRun => suiteRun.specRuns)
+        .filter(specRun => specRun.status.toLowerCase() == 'skipped')
         .length;
 
     statusMap.set('passed', passedSpecRuns);
@@ -53,14 +52,14 @@ export const generateTagColor = (tag: string) => {
 }
 
 export const calculateSpecRuns = (testRun: ITestRun) => {
-    const totalSpecRuns = testRun.suite_runs
-        .flatMap(suiteRun => suiteRun.spec_runs)
-        .filter(specRun => specRun.status !== 'skipped')
+    const totalSpecRuns = testRun.suiteRuns
+        .flatMap(suiteRun => suiteRun.specRuns)
+        .filter(specRun => specRun.status.toLowerCase() !== 'skipped')
         .length;
 
-    const passedSpecRuns = testRun.suite_runs
-        .flatMap(suiteRun => suiteRun.spec_runs)
-        .filter(specRun => specRun.status === 'passed')
+    const passedSpecRuns = testRun.suiteRuns
+        .flatMap(suiteRun => suiteRun.specRuns)
+        .filter(specRun => specRun.status.toLowerCase() === 'passed')
         .length;
 
     return `${passedSpecRuns}/${totalSpecRuns}`;
@@ -69,8 +68,8 @@ export const calculateSpecRuns = (testRun: ITestRun) => {
 
 export const expandedRowRender = (testRun: ITestRun) => (
     <>
-        {testRun.suite_runs.map((suiteRun, suiteIndex) =>
-            <Table dataSource={suiteRun.spec_runs.filter(specRun => specRun.status !== 'skipped')} // Remove skipped tests
+        {testRun.suiteRuns.map((suiteRun, suiteIndex) =>
+            <Table dataSource={suiteRun.specRuns.filter(specRun => specRun.status.toLowerCase() !== 'skipped')} // Remove skipped tests
                    pagination={false}
                    key={suiteIndex}>
                 rowKey="id"
@@ -79,12 +78,12 @@ export const expandedRowRender = (testRun: ITestRun) => (
                               width={50}
                               key="id"/>
                 <Table.Column title="Suite Name"
-                              dataIndex="suite_name"
+                              dataIndex="suiteName"
                               key="suite_name"
                               width={200}
-                              render={() => suiteRun.suite_name}/>
+                              render={() => suiteRun.suiteName}/>
                 <Table.Column title="Spec Description"
-                              dataIndex="spec_description"
+                              dataIndex="specDescription"
                               width={400}
                               key="spec_description"/>
                 <Table.Column title="Message"
@@ -117,17 +116,24 @@ export const expandedRowRender = (testRun: ITestRun) => (
                 <Table.Column title="Duration"
                               key="duration"
                               width={120}
-                              render={(_text, record: ISpecRun) => calculateDuration(record.start_time, record.end_time)}/>
+                              render={(_text, record: ISpecRun) => calculateDuration(record.startTime, record.endTime)}/>
                 <Table.Column title="Tags"
                               key="tags"
                               width={200}
                               render={(_text, record: ISpecRun) => (
                                   <Space>
-                                      {record.tags.map((tag: ITag, _) => (
-                                          <Tag color={generateTagColor(tag.name)} key={tag.id}>{tag.name}</Tag>
-                                      ))}
+                                      {record.tags && record.tags.length > 0 ? (
+                                          record.tags.map((tag: ITag) => (
+                                              <Tag color={generateTagColor(tag.name)} key={tag.id}>
+                                                  {tag.name}
+                                              </Tag>
+                                          ))
+                                      ) : (
+                                          <Tag color="default">No Tags</Tag>
+                                      )}
                                   </Space>
-                              )}/>
+                              )}
+                />
             </Table>
         )}
     </>

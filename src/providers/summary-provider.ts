@@ -19,7 +19,6 @@ export const summaryProvider: DataProvider = {
                 total: response.data.total,
             };
         }
-        console.log("Unsupported request for summaryProvider")
         return {
             data: [],
             total: 0,
