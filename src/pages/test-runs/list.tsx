@@ -36,9 +36,9 @@ export const TestRunsList = () => {
     // Combine all pages into a single array
     const allData = data?.pages.flatMap((page) => page.data) || [];
 
-    const debounce = (func: { (): void; apply?: any; }, wait: number | undefined) => {
-        let timeout: string | number | NodeJS.Timeout | undefined;
-        return function (...args: any) {
+    const debounce = (func: (...args: any[]) => void, wait: number | undefined) => {
+        let timeout: NodeJS.Timeout | undefined;
+        return function (this: any, ...args: any[]) {
             clearTimeout(timeout);
             timeout = setTimeout(() => func.apply(this, args), wait);
         };
