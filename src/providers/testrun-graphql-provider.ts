@@ -1,7 +1,6 @@
-import type { DataProvider } from "@refinedev/core";
+import type {BaseRecord, DataProvider, GetListResponse, GetListParams} from "@refinedev/core";
 import { GraphQLClient } from "graphql-request";
-import { gql } from "graphql-request";
-import { GET_TEST_RUNS, GET_TEST_RUN_BY_ID } from "../pages/test-runs/graphqlQueries";
+import { GET_TEST_RUNS, GET_TEST_RUN_BY_ID } from "../pages/test-runs/graphQlQueries";
 
 // Check if the environment variable is set
 const VITE_FERN_REPORTER_GRAPHQL_BASE_URL = import.meta.env.VITE_FERN_REPORTER_GRAPHQL_BASE_URL;
@@ -60,7 +59,7 @@ interface GetTestRunsResponse {
 
 // Get a paginated list of TestRuns
 export const graphqlDataProvider: DataProvider = {
-    getList: async ({ resource, meta, pagination }) => {
+    getList: async <TData extends BaseRecord = BaseRecord>({resource, meta, pagination,}: GetListParams) => {
         const { pageSize=5, current = 1 } = pagination || {}; // Extract pagination values
         const first = pageSize; // Number of items per page
         const isDescendingOrder = TestRunsSortOrder.DESCENDING;
@@ -69,7 +68,6 @@ export const graphqlDataProvider: DataProvider = {
         const after: string | null = meta?.queryContext?.pageParam || null;
 
         try {
-
             const response: GetTestRunsResponse = await client.request(GET_TEST_RUNS, {
                 first,
                 after,
@@ -85,7 +83,6 @@ export const graphqlDataProvider: DataProvider = {
                 id: edge.testRun.id.toString(),
                 cursor: edge.cursor, // Include cursor in the data for pagination
             }));
-
             // Return the paginated data
             return {
                 data,
@@ -95,11 +92,12 @@ export const graphqlDataProvider: DataProvider = {
                     prev: pageInfo.startCursor,
                     hasNextPage: pageInfo.hasNextPage,
                 },
-            };
+            } as unknown as GetListResponse<TData>;
         } catch (error) {
             console.error("Error fetching testRuns:", error);
             throw error;
         }
+
     },
 
     // Fetch a single TestRun by ID
