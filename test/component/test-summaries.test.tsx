@@ -2,14 +2,14 @@ import { testsummariesApiResponse } from "../utils/summaryDataMocks";
 import React from "react";
 import { TestSummary } from "../../src/pages/test-summaries";
 import TestHistoryGrid from "../../src/pages/test-summaries/summary-utils";
-import {useTable} from "@refinedev/antd";
+import {useSimpleList} from "@refinedev/antd";
 import {render, screen} from "@testing-library/react";
 
 jest.mock('@refinedev/antd', () => {
     const originalModule = jest.requireActual('@refinedev/antd');
     return {
         ...originalModule,
-        useTable: jest.fn(),
+        useSimpleList: jest.fn(),
     };
 });
 
@@ -19,9 +19,9 @@ describe('TestSummary Component Tests', () => {
     });
 
     test('displays the title and table headers correctly', () => {
-        // Mock useTable to return data
-        (useTable as jest.Mock).mockReturnValue({
-            tableProps: {
+        // Mock useSimpleList to return data
+        (useSimpleList as jest.Mock).mockReturnValue({
+            listProps: {
                 dataSource: [
                     testsummariesApiResponse
                 ],
@@ -36,9 +36,9 @@ describe('TestSummary Component Tests', () => {
     });
 
     test('displays the expected project', () => {
-        // Mock useTable to return data
-        (useTable as jest.Mock).mockReturnValue({
-            tableProps: {
+        // Mock useSimpleList to return data
+        (useSimpleList as jest.Mock).mockReturnValue({
+            listProps: {
                 dataSource: [
                    "Dummy Project"
                 ],
@@ -51,9 +51,9 @@ describe('TestSummary Component Tests', () => {
     });
 
     test('displays the correct message when no data is available', () => {
-        // Mock useTable to return no data
-        (useTable as jest.Mock).mockReturnValue({
-            tableProps: {
+        // Mock useSimpleList to return no data
+        (useSimpleList as jest.Mock).mockReturnValue({
+            listProps: {
                 dataSource: [],
             },
         });
@@ -64,8 +64,8 @@ describe('TestSummary Component Tests', () => {
     });
 
     test('calculates the expected tests under the project card when data is available', () => {
-        (useTable as jest.Mock).mockReturnValue({
-            tableProps: {
+        (useSimpleList as jest.Mock).mockReturnValue({
+            listProps: {
                 dataSource: [
                     testsummariesApiResponse
                 ],
@@ -75,9 +75,9 @@ describe('TestSummary Component Tests', () => {
     });
 
     test('displays the expected message under project card when no data is available', () => {
-        // Mock useTable to return data
-        (useTable as jest.Mock).mockReturnValue({
-            tableProps: {
+        // Mock useSimpleList to return data
+        (useSimpleList as jest.Mock).mockReturnValue({
+            listProps: {
                 dataSource: [],
             },
         });
