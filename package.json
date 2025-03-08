@@ -31,6 +31,7 @@
     "uniqolor": "^1.1.1"
   },
   "devDependencies": {
+    "@esbuild/darwin-arm64": "^0.25.0",
     "@testing-library/jest-dom": "^6.4.5",
     "@testing-library/react": "^15.0.7",
     "@testing-library/user-event": "^14.5.2",

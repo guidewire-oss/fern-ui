@@ -3,7 +3,8 @@
 # dependencies
 /node_modules
 /.pnp
-.pnp.js
+.pnp.*
+.yarn/
 
 # testing
 /coverage
@@ -25,3 +26,4 @@ yarn-error.log*
 
 .idea
 *.iml
+.git-authors
