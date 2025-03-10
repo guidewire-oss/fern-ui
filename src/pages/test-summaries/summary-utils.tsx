@@ -29,7 +29,9 @@ const TestHistoryGrid: React.FC<{ projectName: string }> = ({ projectName }) => 
             <Popover
                 content={
                     <>
-                        <div> <b>Passed: </b>
+                        <div>
+                            <div><b>{item.SuiteName}</b></div>
+                            <b>Passed: </b>
                             {item.TotalSpecRuns - item.TotalSkippedSpecRuns > 0 ? (
                                 <> {item.TotalPassedSpecRuns}/{item.TotalSpecRuns - item.TotalSkippedSpecRuns}
                                     {" "}
