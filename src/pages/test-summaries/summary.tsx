@@ -19,10 +19,10 @@ export const TestSummary = () => {
             <Card
                 key={index}
                 hoverable
-                title={item.toString()}
+                title={item.name}
                 style={{ textAlign: 'center', marginBottom: '16px', width: '100%' }}
             >
-                <TestHistoryGrid projectName={item.toString()} />
+                <TestHistoryGrid id={item.id} projectName={item.name} projectUUID={item.uuid}/>
             </Card>
         );
     };
