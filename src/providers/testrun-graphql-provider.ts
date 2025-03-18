@@ -27,6 +27,10 @@ interface TestRun {
     testSeed: string;
     startTime: string;
     endTime: string;
+    gitBranch: string;
+    gitSha: string;
+    buildTriggerActor: string;
+    buildUrl: string;
     suiteRuns: {
         id: string;
         suiteName: string;

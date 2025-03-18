@@ -3,6 +3,7 @@ import {IReportSummary} from "../../src/pages/test-summaries/interfaces";
 export const reportSummary: IReportSummary = {
     StartTime: "2024-04-20T04:20:00.000000Z",
     SuiteRunID: 1,
+    SuiteName: "Dummy Suite",
     TestProjectName: "Dummy Project",
     TotalPassedSpecRuns: 3,
     TotalSkippedSpecRuns: 0,

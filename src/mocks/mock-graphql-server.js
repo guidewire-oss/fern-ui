@@ -35,6 +35,10 @@ const typeDefs = `
     testSeed: Int
     startTime: String
     endTime: String
+    gitBranch: String
+    gitSha: String
+    buildTriggerActor: String
+    buildUrl: String
     suiteRuns: [SuiteRun!]!
   }
 
@@ -78,6 +82,17 @@ const generateMockData = () => {
     { id: 4, name: "Sanity" },
     { id: 5, name: "Performance" },
   ];
+  
+  const gitBranches = ["main", "develop", "feature/authentication", "bugfix/login-issue"];
+  const buildTriggerActors = ["alice", "bob", "charlie", "deploy-bot", "jenkins"];
+
+
+  // Utility function to generate a random Git SHA (40 characters)
+  const generateGitSha = () => 
+    Array.from({ length: 40 }, () => Math.floor(Math.random() * 16).toString(16)).join("");
+
+  // Generate a random build URL
+  const generateBuildUrl = (id) => `https://ci.example.com/build/${id}`;
 
   // Generate SpecRun
   const generateSpecRuns = (suiteId) =>
@@ -110,6 +125,10 @@ const generateMockData = () => {
     testSeed: Math.floor(Math.random() * 10000),
     startTime: `2025-01-01T09:00:00Z`,
     endTime: `2025-01-01T10:00:00Z`,
+    gitBranch: gitBranches[Math.floor(Math.random() * gitBranches.length)],
+    gitSha: generateGitSha(),
+    buildTriggerActor: buildTriggerActors[Math.floor(Math.random() * buildTriggerActors.length)],
+    buildUrl: generateBuildUrl(i + 1),
     suiteRuns: generateSuiteRuns(i + 1),
   }));
 };
