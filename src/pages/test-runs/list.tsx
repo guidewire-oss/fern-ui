@@ -11,6 +11,7 @@ import {
     uniqueTags,
     generateTagColor
 } from "./list-utils";
+import { Typography } from "antd/lib";
 
 const HEADER_NAME = import.meta.env.VITE_FERN_REPORTER_HEADER_NAME;
 
@@ -88,7 +89,7 @@ export const TestRunsList = () => {
                 <Table.Column
                     title="Status"
                     key="status"
-                    width={320}
+                    width={280}
                     render={(_text, testRun: ITestRun) => {
                         const statusMap = testRunsStatus(testRun);
                         return (
@@ -121,9 +122,9 @@ export const TestRunsList = () => {
                 />
                 <Table.Column title="Tags"
                               key="tags"
-                              width={500}
+                              width={280}
                               render={(_text, record: ITestRun) => (
-                                  <Space style={{minWidth: '200px'}}>
+                                  <Space wrap style={{minWidth: '200px'}}>
                                       {
                                           uniqueTags(record
                                               .suiteRuns
@@ -136,6 +137,52 @@ export const TestRunsList = () => {
                                       }
                                   </Space>
                               )}
+                />
+
+                <Table.Column
+                    title="Git Branch"
+                    key="gitBranch"
+                    render={(_text, testRun: ITestRun) => (
+                        <Typography.Paragraph 
+                            style={{color: 'inherit' }}>
+                                {testRun.gitBranch}
+                        </Typography.Paragraph>
+                    )}
+                />
+
+                <Table.Column
+                    title="Git SHA"
+                    key="gitSha"
+                    render={(_text, testRun: ITestRun) => (
+                        <Typography.Paragraph 
+                            style={{ color: 'inherit' }}>
+                                {testRun.gitSha}
+                        </Typography.Paragraph>
+                    )}
+                />
+
+                <Table.Column
+                    title="Build Trigger Actor"
+                    key="buildTriggerActor"
+                    render={(_text, testRun: ITestRun) =>
+                        <Typography.Paragraph 
+                            style={{ color: 'inherit' }}>
+                                {testRun.buildTriggerActor}
+                        </Typography.Paragraph>
+                    }
+                />
+
+                <Table.Column
+                    title="Build URL"
+                    key="buildUrl"
+                    render={(_text, testRun: ITestRun) =>
+                        <Typography.Link 
+                            style={{ color: '#66c2ff', textDecoration: 'underline' }}
+                            target="_blank"
+                            href={testRun.buildUrl}>
+                                {testRun.buildUrl}
+                        </Typography.Link>
+                    }
                 />
             </Table>
         </List>
