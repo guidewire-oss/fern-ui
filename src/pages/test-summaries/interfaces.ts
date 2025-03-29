@@ -7,3 +7,9 @@ export interface IReportSummary {
     TotalSkippedSpecRuns: number;
     TotalSpecRuns: number;
 }
+
+export interface IReportProject {
+    id: number;
+    name: string;
+    uuid: string;
+}
