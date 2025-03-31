@@ -1,4 +1,4 @@
-import { testsummariesApiResponse } from "../utils/summaryDataMocks";
+import {reportProject, testsummariesApiResponse} from "../utils/summaryDataMocks";
 import React from "react";
 import { TestSummary } from "../../src/pages/test-summaries";
 import TestHistoryGrid from "../../src/pages/test-summaries/summary-utils";
@@ -23,7 +23,7 @@ describe('TestSummary Component Tests', () => {
         (useSimpleList as jest.Mock).mockReturnValue({
             listProps: {
                 dataSource: [
-                    testsummariesApiResponse
+                    reportProject
                 ],
             },
         });
@@ -32,7 +32,7 @@ describe('TestSummary Component Tests', () => {
         render(<TestSummary />);
 
         // Assert page title is rendered correctly
-        expect(screen.getByText('Test Result Overview')).toBeInTheDocument();
+        expect(screen.getByText('Dummy Project')).toBeInTheDocument();
     });
 
     test('displays the expected project', () => {
@@ -40,7 +40,7 @@ describe('TestSummary Component Tests', () => {
         (useSimpleList as jest.Mock).mockReturnValue({
             listProps: {
                 dataSource: [
-                   "Dummy Project"
+                    reportProject
                 ],
             },
         });
@@ -71,7 +71,7 @@ describe('TestSummary Component Tests', () => {
                 ],
             },
         });
-        render(<TestHistoryGrid projectName={'Dummy Projects'} />);
+        render(<TestHistoryGrid id={'1'} projectName={'Dummy Projects'} projectUUID={'996ad860-2a9a-504f-8861-aeafd0b2ae29'}/>);
     });
 
     test('displays the expected message under project card when no data is available', () => {
@@ -82,7 +82,7 @@ describe('TestSummary Component Tests', () => {
             },
         });
 
-        render(<TestHistoryGrid projectName={'Dummy Tests'} />);
+        render(<TestHistoryGrid id={'1'} projectName={'Dummy Tests'} projectUUID={'996ad860-2a9a-504f-8861-aeafd0b2ae29'}/>);
         expect(screen.getByText('No test data available.')).toBeInTheDocument();
     });
 
