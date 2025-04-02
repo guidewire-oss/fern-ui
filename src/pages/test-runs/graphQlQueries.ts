@@ -13,6 +13,10 @@ export const GET_TEST_RUNS = gql`
                     testSeed
                     startTime
                     endTime
+                    gitBranch
+                    gitSha
+                    buildTriggerActor
+                    buildUrl
                     suiteRuns {
                         id
                         suiteName
@@ -48,6 +52,10 @@ export const GET_TEST_RUN_BY_ID = gql`
             testSeed
             startTime
             endTime
+            gitBranch
+            gitSha
+            buildTriggerActor
+            buildUrl
             suiteRuns {
                 id
                 suiteName

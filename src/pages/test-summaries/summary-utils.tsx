@@ -4,9 +4,15 @@ import {Button, List, Popover} from 'antd';
 import {HttpError} from "@refinedev/core";
 import {useSimpleList} from "@refinedev/antd";
 
-const TestHistoryGrid: React.FC<{ projectName: string }> = ({ projectName }) => {
+interface TestHistoryGridProps {
+    id: string;
+    projectName: string;
+    projectUUID: string;
+}
+
+const TestHistoryGrid: React.FC<TestHistoryGridProps> = ({ id, projectName, projectUUID }) => {
     const {listProps} = useSimpleList<IReportSummary, HttpError>({
-        resource: `summary/${projectName}/`,
+        resource: `summary/${id}/`,
         dataProviderName: "summaries",
     });
 
@@ -29,7 +35,9 @@ const TestHistoryGrid: React.FC<{ projectName: string }> = ({ projectName }) => 
             <Popover
                 content={
                     <>
-                        <div> <b>Passed: </b>
+                        <div>
+                            <div><b>{item.SuiteName}</b></div>
+                            <b>Passed: </b>
                             {item.TotalSpecRuns - item.TotalSkippedSpecRuns > 0 ? (
                                 <> {item.TotalPassedSpecRuns}/{item.TotalSpecRuns - item.TotalSkippedSpecRuns}
                                     {" "}

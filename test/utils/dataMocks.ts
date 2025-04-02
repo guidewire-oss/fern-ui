@@ -22,6 +22,10 @@ const testRun: ITestRun = {
     "testSeed": 1717396142,
     "startTime": "2024-06-03T06:29:32.938772Z",
     "endTime": "2024-06-03T06:29:34.517009Z",
+    "gitBranch": "main",
+    "gitSha": "e1e7d6f",
+    "buildTriggerActor": "test-runner",
+    "buildUrl": "example.com",
     "suiteRuns": [
         {
             "id": 1,

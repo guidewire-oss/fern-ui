@@ -4,6 +4,10 @@ export interface ITestRun {
     testSeed: number;
     startTime: string;
     endTime: string;
+    gitBranch: string;
+    gitSha: string;
+    buildTriggerActor: string;
+    buildUrl: string;
     suiteRuns: ISuiteRun[];
 }
 

@@ -67,6 +67,10 @@ describe("TestRunsList Component", () => {
                 ],
                 startTime: "2022-01-01T00:00:00Z",
                 endTime: "2022-01-01T01:00:00Z",
+                gitBranch: "main",
+                gitSha: "kf6830",
+                buildTriggerActor: "user1",
+                buildUrl: "http://example.com/build/1",
             },
         ];
 
@@ -90,6 +94,10 @@ describe("TestRunsList Component", () => {
         expect(screen.getByText('Spec Runs')).toBeInTheDocument();
         expect(screen.getByText('Duration')).toBeInTheDocument();
         expect(screen.getByText('Tags')).toBeInTheDocument();
+        expect(screen.getByText('Git Branch')).toBeInTheDocument();
+        expect(screen.getByText('Git SHA')).toBeInTheDocument();
+        expect(screen.getByText('Build Trigger Actor')).toBeInTheDocument();
+        expect(screen.getByText('Build URL')).toBeInTheDocument();
     });
 
     it("should render loading state", () => {
@@ -134,6 +142,10 @@ describe("TestRunsList Component", () => {
                 suiteRuns: [{ suiteName: "Suite 1", specRuns: [] }],
                 startTime: "2022-01-01T00:00:00Z",
                 endTime: "2022-01-01T01:00:00Z",
+                gitBranch: "main",
+                gitSha: "kf6830",
+                buildTriggerActor: "user1",
+                buildUrl: "http://example.com/build/1",
             },
         ];
 
@@ -153,6 +165,10 @@ describe("TestRunsList Component", () => {
         await waitFor(() => {
             expect(screen.getByText("Project A")).toBeInTheDocument();
             expect(screen.getByText("Suite 1")).toBeInTheDocument();
+            expect(screen.getByText("main")).toBeInTheDocument();
+            expect(screen.getByText("kf6830")).toBeInTheDocument();
+            expect(screen.getByText("user1")).toBeInTheDocument();
+            expect(screen.getByText("http://example.com/build/1")).toBeInTheDocument();
         });
     });
 
@@ -164,6 +180,10 @@ describe("TestRunsList Component", () => {
                 suiteRuns: [{ suiteName: "Suite 1", specRuns: [] }],
                 startTime: "2022-01-01T00:00:00Z",
                 endTime: "2022-01-01T01:00:00Z",
+                gitBranch: "main",
+                gitSha: "kf6830",
+                buildTriggerActor: "user1",
+                buildUrl: "http://example.com/build/1",
             },
         ];
         const fetchNextPageMock = jest.fn();
@@ -233,6 +253,10 @@ describe("TestRunsList Component", () => {
                 ],
                 startTime: "2022-01-01T00:00:00Z",
                 endTime: "2022-01-01T01:00:00Z",
+                gitBranch: "main",
+                gitSha: "kf6830",
+                buildTriggerActor: "user1",
+                buildUrl: "http://example.com/build/1",
             },
         ];
 
@@ -295,6 +319,10 @@ describe("TestRunsList Component", () => {
                 ],
                 startTime: "2022-01-01T00:00:00Z",
                 endTime: "2022-01-01T01:00:00Z",
+                gitBranch: "main",
+                gitSha: "kf6830",
+                buildTriggerActor: "user1",
+                buildUrl: "http://example.com/build/1",
             },
         ];
 
@@ -324,6 +352,10 @@ describe("TestRunsList Component", () => {
                 suiteRuns: [{ suiteName: "Suite 1", specRuns: [] }],
                 startTime: "2022-01-01T00:00:00Z",
                 endTime: "2022-01-01T01:00:00Z",
+                gitBranch: "main",
+                gitSha: "kf6830",
+                buildTriggerActor: "user1",
+                buildUrl: "http://example.com/build/1",
             },
         ];
 
@@ -378,6 +410,10 @@ describe("TestRunsList Component", () => {
                 ],
                 startTime: "2022-01-01T00:00:00Z",
                 endTime: "2022-01-01T01:00:00Z",
+                gitBranch: "main",
+                gitSha: "kf6830",
+                buildTriggerActor: "user1",
+                buildUrl: "http://example.com/build/1",
             },
         ];
 
