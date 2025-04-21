@@ -1,5 +1,7 @@
 import type { RefineThemedLayoutV2HeaderProps } from "@refinedev/antd";
 import { useGetIdentity } from "@refinedev/core";
+import { UserOutlined } from '@ant-design/icons';
+import { useNavigate } from "react-router-dom";
 import {
     Avatar,
     Layout as AntdLayout,
@@ -10,6 +12,7 @@ import {
 } from "antd";
 import React, { useContext } from "react";
 import { ColorModeContext } from "../../contexts/color-mode";
+
 
 const { Text } = Typography;
 const { useToken } = theme;
@@ -26,6 +29,7 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
     const { token } = useToken();
     const { data: user } = useGetIdentity<IUser>();
     const { mode, setMode } = useContext(ColorModeContext);
+    const navigate = useNavigate();
 
     const headerStyles: React.CSSProperties = {
         backgroundColor: token.colorBgElevated,
@@ -52,12 +56,20 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
                         setMode(mode === "light" ? "dark" : "light")
                     }
                     defaultChecked={mode === "dark"}
+                    checked={mode === "dark"} // ensures that both switches stay in sync since they're both controlled by the same ColorModeContext state
                 />
-                <Space style={{ marginLeft: "8px" }} size="middle">
+                <Space
+                    style={{ marginLeft: "8px", cursor: "pointer" }}
+                    size="middle"
+                    onClick={() => navigate("/preferences")}
+                    >
                     {user?.name && <Text strong>{user.name}</Text>}
-                    {user?.avatar && (
-                        <Avatar src={user?.avatar} alt={user?.name} />
-                    )}
+
+                    <Avatar
+                        src={user?.avatar || null}
+                        icon={!user?.avatar ? <UserOutlined /> : null}
+                        alt={user?.name}
+                    />
                 </Space>
             </Space>
         </AntdLayout.Header>
