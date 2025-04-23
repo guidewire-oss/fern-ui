@@ -13,14 +13,43 @@ import routerBindings, {
     UnsavedChangesNotifier
 } from "@refinedev/react-router-v6";
 import {ColorModeContextProvider} from "./contexts/color-mode";
-import {Header} from "./components";
+import {Header, LoadingSpinner} from "./components";
 import {graphqlDataProvider} from "./providers/testrun-graphql-provider";
 import {summaryProvider} from "./providers/summary-provider";
 import {TestRunsList} from "./pages/test-runs";
 import {TestSummary} from "./pages/test-summaries";
+import {UserPreferencePage} from "./pages/user-preference"
+import { fetchUserPreference } from "./pages/user-preference/user-preference-utils";
+import { useContext, useEffect, useState } from 'react';
+import { ColorModeContext } from "../src/contexts/color-mode";
+import moment from 'moment-timezone';
 
 function App() {
+    const { setMode } = useContext(ColorModeContext);
+    const [timezone, setTimezone] = useState(moment.tz.guess());
+    const [isUserPreferencesLoaded, setIsUserPreferencesLoaded] = useState(false);
 
+    useEffect(() => {
+        const initUserPreferences = async () => {
+            try {
+                const userPref = await fetchUserPreference();
+                if (userPref) {
+                    setMode(userPref.isDark ? "dark" : "light");
+                    setTimezone(userPref.timezone);
+                }
+            } catch (err) {
+                console.error("Failed to load user preferences:", err);
+            } finally {
+                setIsUserPreferencesLoaded(true);
+            }
+        };
+        initUserPreferences();
+    }, []);
+    
+
+    if (!isUserPreferencesLoaded) {
+        return <LoadingSpinner />;
+    }
 
     return (
         <BrowserRouter>
@@ -54,6 +83,14 @@ function App() {
                                         meta: {
                                             parent: "Test Reports",
                                             dataProviderName: "summaries",
+                                        },
+                                    },
+                                    {
+                                        name: "preferences",
+                                        list: "/preferences",
+                                        meta: {
+                                            parent: "Test Reports",
+                                            dataProviderName: "userpreference",
                                         },
                                     },
                                 ]}
@@ -90,6 +127,9 @@ function App() {
                                         </Route>
                                         <Route path="/testsummaries">
                                             <Route index element={<TestSummary />} />
+                                        </Route>
+                                        <Route path="/preferences">
+                                            <Route index element={<UserPreferencePage />} />
                                         </Route>
                                         <Route path="*" element={<ErrorComponent/>}/>
                                     </Route>
