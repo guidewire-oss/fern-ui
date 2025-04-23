@@ -2,7 +2,7 @@ import {Refine,} from '@refinedev/core';
 import {DevtoolsPanel, DevtoolsProvider} from "@refinedev/devtools";
 import {RefineKbar, RefineKbarProvider} from "@refinedev/kbar";
 
-import {ErrorComponent, ThemedLayoutV2, ThemedSiderV2, ThemedTitleV2, useNotificationProvider} from '@refinedev/antd';
+import {ErrorComponent, ThemedLayoutV2, useNotificationProvider} from '@refinedev/antd';
 import "@refinedev/antd/dist/reset.css";
 
 import {App as AntdApp} from "antd"
@@ -18,6 +18,8 @@ import {graphqlDataProvider} from "./providers/testrun-graphql-provider";
 import {summaryProvider} from "./providers/summary-provider";
 import {TestRunsList} from "./pages/test-runs";
 import {TestSummary} from "./pages/test-summaries";
+
+const NoSider: React.FC = () => null; // to hide the side-navbar
 
 function App() {
 
@@ -70,20 +72,14 @@ function App() {
                                         element={(
                                             <ThemedLayoutV2
                                                 Header={() => <Header sticky/>}
-                                                Sider={(props) => (
-                                                    <ThemedSiderV2 {...props} fixed/>
-                                                )}
-                                                Title={(props) => (
-                                                    <ThemedTitleV2 {...props} text={"Fern Reporter"}/>
-                                                )}
-                                                initialSiderCollapsed={true}
+                                                Sider={NoSider}
                                             >
                                                 <Outlet/>
                                             </ThemedLayoutV2>
                                         )}
                                     >
                                         <Route index element={
-                                            <NavigateToResource resource="summaries"/>
+                                            <NavigateToResource resource="testruns"/>
                                         }/>
                                         <Route path="/testruns">
                                             <Route index element={<TestRunsList/>}/>
