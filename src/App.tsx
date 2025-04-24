@@ -79,7 +79,7 @@ function App() {
                                         )}
                                     >
                                         <Route index element={
-                                            <NavigateToResource resource="testruns"/>
+                                            <NavigateToResource resource="summaries"/>
                                         }/>
                                         <Route path="/testruns">
                                             <Route index element={<TestRunsList/>}/>

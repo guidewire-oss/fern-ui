@@ -12,9 +12,10 @@ import {
     Button
 } from "antd";
 import { MenuOutlined } from '@ant-design/icons';
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useCallback } from "react";
 import { ColorModeContext } from "../../contexts/color-mode";
 import { useLocation, useNavigate } from "react-router-dom";
+import { debounce } from "../../utils/debounce";
 
 const { Text } = Typography;
 const { useToken } = theme;
@@ -35,14 +36,19 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
     const location = useLocation();
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
-    useEffect(() => {
-        const handleResize = () => {
-            setWindowWidth(window.innerWidth);
-        };
-        
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
+    const handleResize = useCallback(() => {
+        setWindowWidth(window.innerWidth);
     }, []);
+
+    const debouncedHandleResize = useCallback(
+        debounce(handleResize, 250),
+        [handleResize]
+    );
+
+    useEffect(() => {
+        window.addEventListener('resize', debouncedHandleResize);
+        return () => window.removeEventListener('resize', debouncedHandleResize);
+    }, [debouncedHandleResize]);
 
     const headerStyles: React.CSSProperties = {
         backgroundColor: token.colorBgElevated,
@@ -59,8 +65,9 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
     }
 
     const navTabs = [
-        { label: "Test Run", key: "testruns", path: "/testruns" },
         { label: "Test Summary", key: "testsummaries", path: "/testsummaries" },
+        { label: "Test Run", key: "testruns", path: "/testruns" },
+        
         // add more tabs here as needed in the future
     ];
 
