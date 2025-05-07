@@ -5,6 +5,7 @@ import {HttpError} from "@refinedev/core";
 import TestHistoryGrid from "./summary-utils";
 import { useFavorite } from '../../hooks/useFavorite';
 import { StarFilled, StarOutlined } from "@ant-design/icons"; 
+import { useMessageProvider } from '../../hooks/useMessageProvider';
 
 export const TestSummary = () => {
     const { listProps } = useSimpleList<string[], HttpError>({
@@ -13,12 +14,19 @@ export const TestSummary = () => {
     });
 
     const { favorites, toggleFavorite, fetchFavorites} = useFavorite();
+    const { success, error } = useMessageProvider();
 
     // State to control whether to show only favorites
     const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
 
     useEffect(() => {
-        fetchFavorites();
+        (async () => {
+            try {
+                await fetchFavorites();
+            } catch {
+                error("Unable to load favorites. Please try again.");
+            }
+        })();
     }, [fetchFavorites]);
     
 
@@ -35,12 +43,12 @@ export const TestSummary = () => {
             await toggleFavorite(projectUUID, isFavorite);
             
             if (!isFavorite) {
-                message.success("Added to favorites");
+                success("Added to favorites");
             } else {
-                message.success("Removed from favorites");
+                success("Removed from favorites");
             }
-        } catch (error) {
-            message.error("An error occurred while toggling the favorite.");
+        } catch (err) {
+            error("An error occurred while toggling the favorite.");
         }
     };
     

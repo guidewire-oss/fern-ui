@@ -4,16 +4,10 @@ import { API_URL } from "./testrun-provider";
 export const favoritesProvider = {
     // Fetch all favorite projects
     fetchFavorites: async () => {
-        const url = `${API_URL}/user/preferred`;
+        const url = `${API_URL}/user/favourite`;
         try {
             const { data } = await axios.get(url, { withCredentials: true });
-            const uuids = new Set<string>();
-            data.preferred.forEach((group: { projects: any[] }) => {
-                group.projects.forEach((project) => {
-                    uuids.add(project.uuid);
-                });
-            });
-            return uuids;
+            return new Set<string>(data);
         } catch (error) {
             console.error("Failed to fetch favorites:", error);
             throw error;
