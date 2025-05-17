@@ -15,8 +15,8 @@ export const summaryProvider: DataProvider = {
         }
         else if(resource.startsWith("summary")) {
             return {
-                data: response.data,
-                total: response.data.total,
+                data: response?.data,
+                total: response?.data?.total,
             };
         }
         return {
