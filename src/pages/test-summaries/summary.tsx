@@ -6,6 +6,7 @@ import TestHistoryGrid from "./summary-utils";
 import { useFavorite } from '../../hooks/useFavorite';
 import { StarFilled, StarOutlined } from "@ant-design/icons"; 
 import { useMessageProvider } from '../../hooks/useMessageProvider';
+import Cookies from "js-cookie";
 
 export const TestSummary = () => {
     const { listProps } = useSimpleList<string[], HttpError>({
@@ -16,8 +17,10 @@ export const TestSummary = () => {
     const { favorites, toggleFavorite, fetchFavorites} = useFavorite();
     const { success, error } = useMessageProvider();
 
-    // State to control whether to show only favorites
-    const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+    const [showFavoritesOnly, setShowFavoritesOnly] = useState(() => {
+        const cookieValue = Cookies.get("showFavoritesOnly");
+            return cookieValue === "true";
+    });
 
     useEffect(() => {
         (async () => {
@@ -50,6 +53,11 @@ export const TestSummary = () => {
         } catch (err) {
             error("An error occurred while toggling the favorite.");
         }
+    };
+
+    const handleSwitchChange = (checked: boolean) => {
+        setShowFavoritesOnly(checked);
+        Cookies.set("showFavoritesOnly", checked ? "true" : "false", { expires: 365 });
     };
     
     const renderListItem = (item: any, index: number) => {
@@ -86,7 +94,7 @@ export const TestSummary = () => {
                 <div style={{ marginBottom: "16px", textAlign: "right", paddingRight: "28px" }}>
                     <Switch
                         checked={showFavoritesOnly}
-                        onChange={() => setShowFavoritesOnly((prev) => !prev)}
+                        onChange={handleSwitchChange}
                         checkedChildren="Favorites Only"
                         unCheckedChildren="All Projects"
                         style={{ transform: "scale(1.5)" }}
