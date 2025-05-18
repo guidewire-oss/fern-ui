@@ -38,7 +38,6 @@ export async function fetchPreferredProjects(): Promise<GroupedProjectsResponse[
         },
     });
     if (response.status !== 200) {
-        console.log("Failed to fetch preferred projects", response.data);
         throw new Error("Failed to fetch preferred projects " + response.data);
     }
     return response.data.preferred;

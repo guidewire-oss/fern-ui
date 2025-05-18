@@ -1,16 +1,16 @@
 import React from "react";
 import {HeatmapTile} from "./HeatmapTile";
 import "./HeatmapStyles.css";
-import {ProjectTestRunStatus} from "../../../providers/project-provider";
+import {ProjectTestRunStatus} from "./GroupHeatmapGrid";
 
-export interface GroupHeatmapArgs {
+export interface GroupHeatmapProps {
     groupId?: number
     groupName: string
     projectTestRuns: ProjectTestRunStatus[]
 }
 
 
-export const GroupHeatmap = (groupHeatmapArgs: GroupHeatmapArgs) => {
+export const GroupHeatmap = (groupHeatmapArgs: GroupHeatmapProps) => {
     let numRows, numCols;
     const projectCount = groupHeatmapArgs.projectTestRuns.length;
 

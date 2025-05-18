@@ -1,21 +1,30 @@
-// GroupHeatmapGrid.tsx
 import React, {useEffect, useState} from "react";
-import {GroupHeatmap, GroupHeatmapArgs} from "./GroupHeatMap";
+import {GroupHeatmap, GroupHeatmapProps} from "./GroupHeatMap";
 import "./HeatmapStyles.css";
 import {fetchPreferredProjects} from "../../../providers/user-prreferred-provider";
-import {ProjectTestRunStatus} from "../../../providers/project-provider";
 import {fetchTestRuns} from "../../../providers/testrun-provider";
+import {message} from "antd";
+
+export interface ProjectTestRunStatus {
+    id: number
+    uuid: string
+    name: string
+    status: string
+    passed: number
+    failed: number
+    skipped: number
+    executionTime: string
+}
 
 export const GroupHeatmapGrid = () => {
-    const [heatmapData, setHeatmapData] = useState<GroupHeatmapArgs[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [heatmapData, setHeatmapData] = useState<GroupHeatmapProps[]>([]);
 
     useEffect(() => {
         const fetchHeatmapData = async () => {
             try {
                 const groupedProjectsResponses = await fetchPreferredProjects();
 
-                const result: GroupHeatmapArgs[] = []
+                const result: GroupHeatmapProps[] = []
 
                 for (const group of groupedProjectsResponses) {
 
@@ -49,7 +58,7 @@ export const GroupHeatmapGrid = () => {
                         };
                         projectTestRunsArr.push(projectTestRuns)
                     }
-                    const groupHeatmapArgs: GroupHeatmapArgs = {
+                    const groupHeatmapArgs: GroupHeatmapProps = {
                         groupId: group.group_id,
                         groupName: group.group_name,
                         projectTestRuns: projectTestRunsArr
@@ -58,10 +67,8 @@ export const GroupHeatmapGrid = () => {
                 }
                 setHeatmapData(result);
             } catch (error) {
-                //TODO: Need to add a notification message here.
+                message.error("Failed to fetch group data")
                 console.error("Failed to fetch heatmap data", error);
-            } finally {
-                setLoading(false);
             }
         };
 
