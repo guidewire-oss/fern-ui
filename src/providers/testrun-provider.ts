@@ -45,3 +45,70 @@ export const testrunProvider: DataProvider = {
     // updateMany: () => { /* ... */ },
     // custom: () => { /* ... */ },
 };
+
+interface TestRun {
+    id: string;
+    test_project_name: string;
+    test_seed: string;
+    start_time: string;
+    end_time: string;
+    git_branch: string;
+    git_sha: string;
+    build_trigger_actor: string;
+    build_url: string;
+    status: string;
+    suite_runs: {
+        id: string;
+        suite_name: string;
+        start_time: string;
+        end_time: string;
+        spec_runs: {
+            id: string;
+            spec_description: string;
+            status: string;
+        }[];
+    }[];
+    project: {
+        uuid: string;
+        name: string;
+        team_name: string;
+        comment: string;
+        created_at: string;
+        updated_at: string;
+    };
+}
+
+
+export async function fetchTestRuns({
+                                        filters = {},
+                                        fields = [""],
+                                        sortBy = 'end_time',
+                                        order = 'desc'
+                                    } = {}) : Promise<TestRun[]> {
+    try {
+        const params = {
+            ...filters,
+            fields: "",
+            sort_by: sortBy,
+            order: order,
+        };
+
+        if (fields.length > 0) {
+            params.fields = fields.join(',');
+        }
+
+        const response = await axios.get(`${API_URL}/testrun/`, {
+                withCredentials: true,
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                params
+            }
+        );
+
+        return response.data;
+    } catch (error) {
+        console.error('Failed to fetch test runs:', error);
+        throw error;
+    }
+}

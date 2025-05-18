@@ -16,16 +16,21 @@ export interface TestRun {
     status: string
 }
 
-export interface ProjectTestRuns {
+export interface ProjectTestRunStatus {
     id: number
     uuid: string
     name: string
-    testRuns : TestRun[]
+    status: string
+    passed: number
+    failed: number
+    skipped: number
+    executionTime: string
+    testRuns? : TestRun[]
 }
 
-
-export async function fetchProjectTestRuns(uuid: string): Promise<ProjectTestRuns> {
-    const response = await axios.get<ProjectTestRuns>(`${API_URL}/project/${uuid}/testruns`, {
+//TODO: Remove this client
+export async function fetchProjectTestRuns(uuid: string): Promise<ProjectTestRunStatus> {
+    const response = await axios.get<ProjectTestRunStatus>(`${API_URL}/project/${uuid}/testruns`, {
         withCredentials: true, // Ensures cookies are included
         headers: {
             "Content-Type": "application/json",

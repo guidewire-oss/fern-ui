@@ -1,70 +1,72 @@
-/* Container for all group heatmaps */
 .heatmap-grid-container {
     display: flex;
-    gap: 24px;
+    gap: 40px;
     flex-wrap: wrap;
-    padding: 16px 0;
+    padding: 24px 0;
+    justify-content: flex-start;
 }
 
 .heatmap-group-block {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
+    margin-bottom: 24px;
 }
 
 .group-heatmap {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    margin-bottom: 16px;
+    align-items: flex-start;
+    margin-bottom: 20px;
 }
 
-/* Grid container for the heatmap squares */
 .heatmap-grid-square {
     display: grid;
-    gap: 1px; /* Small gap between tiles */
+    gap: 1px;
     background: transparent;
     border: none;
     margin-bottom: 6px;
-}
-
-/* Dynamic grid layouts based on number of tiles */
-.heatmap-grid-square.dynamic-rows-3 {
-    grid-template-columns: repeat(3, 32px);
-}
-
-.heatmap-grid-square.dynamic-rows-4 {
-    grid-template-columns: repeat(4, 32px);
+    max-width: 100%;
 }
 
 .heatmap-label {
-    margin-top: 8px;
+    margin-top: 12px;
     font-weight: 600;
     font-size: 16px;
     text-align: center;
 }
 
-/* Tile styling */
 .heatmap-tile {
     width: 32px;
     height: 32px;
-    border: 1px solid;
+    border: 2px solid;
     box-sizing: border-box;
     transition: transform 0.1s ease;
 }
 
-/* Optional hover effect */
-/*.heatmap-tile:hover {*/
-/*    transform: scale(1.05);*/
-/*    box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);*/
-/*}*/
+.heatmap-tile:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+}
 
-/* Legacy grid class for backwards compatibility */
-.heatmap-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, 32px);
-    gap: 1px;
-    background: transparent;
-    padding: 0;
-    border: none;
+@media (max-width: 768px) {
+    .heatmap-grid-container {
+        gap: 24px;
+    }
+
+    .heatmap-tile {
+        width: 28px;
+        height: 28px;
+    }
+}
+
+@media (max-width: 480px) {
+    .heatmap-grid-container {
+        gap: 16px;
+    }
+
+    .heatmap-tile {
+        width: 24px;
+        height: 24px;
+    }
 }

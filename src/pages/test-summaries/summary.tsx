@@ -1,21 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { useSimpleList } from "@refinedev/antd";
-import { Button, Card, Dropdown, Input, List, Menu, message, Modal, Select, Spin } from "antd";
-import { HttpError } from "@refinedev/core";
+import React, {useEffect, useState} from 'react';
+import {useSimpleList} from "@refinedev/antd";
+import {Button, Card, Dropdown, List, Menu, message, Select, Spin} from "antd";
+import {HttpError} from "@refinedev/core";
 import TestHistoryGrid from "./summary-utils";
-import { HamburgerMenu } from "@refinedev/mui";
-import {HeatMapOutlined, MenuOutlined, MoreOutlined} from "@ant-design/icons";
+import {MenuOutlined} from "@ant-design/icons";
 import {
     fetchPreferredProjects,
     GroupedProjectsRequest,
     savePreferredProjects
 } from "../../providers/user-prreferred-provider";
-import axios from "axios";
-import {GroupHeatmap, GroupHeatmapArgs} from "./heatmap/GroupHeatMap";
-import {fetchProjectTestRuns, ProjectTestRuns} from "../../providers/project-provider";
 import {GroupHeatmapGrid} from "./heatmap/GroupHeatmapGrid";
-// import { Select } from 'antd';
-// import HamburgerMenu from "../../components/common/HamburgerMenu";
 
 interface Group {
     id: number;
@@ -36,10 +30,6 @@ export const TestSummary = () => {
     const [searchValue, setSearchValue] = useState('');
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
-
-
-
-    // Placeholder: Fetch group list from API
     const fetchGroups = async () => {
         setLoading(true);
         try {
@@ -126,7 +116,7 @@ export const TestSummary = () => {
     };
 
     const menu = (recordId: string, project: Project) => (
-        <Menu onClick={({ key }) => handleMenuClick({ key }, recordId, project)}>
+        <Menu onClick={({ key }) => handleMenuClick({ key }, recordId, project)} >
             <Menu.Item key="add_to_group">Add to group</Menu.Item>
         </Menu>
     );
@@ -213,42 +203,6 @@ export const TestSummary = () => {
         dataProviderName: "summaries",
     });
 
-    //************************************************heatmap changes***************************************************
-    const [heatmapData, setHeatmapData] = useState<GroupHeatmapArgs[]>([]);
-    // const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchHeatmapData = async () => {
-            try {
-                const groupedProjectsResponses = await fetchPreferredProjects();
-
-                const result : GroupHeatmapArgs[] = []
-
-                for(const group of groupedProjectsResponses) {
-
-                    const projectTestRunsArr : ProjectTestRuns[] = []
-                    for(const project of group.projects) {
-                        const projectTestRuns = await fetchProjectTestRuns(project.uuid)
-                        projectTestRunsArr.push(projectTestRuns)
-                    }
-                    const groupHeatmapArgs : GroupHeatmapArgs = {groupName : group.group_name, projectTestRuns : projectTestRunsArr}
-                    result.push(groupHeatmapArgs)
-                }
-                setHeatmapData(result);
-            } catch (error) {
-                console.error("Failed to fetch heatmap data", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchHeatmapData();
-    }, []);
-
-    //Handle loading part
-    // if (loading) return <Spin />;
-
-
     if (!listProps.dataSource || listProps.dataSource.length === 0) {
         return <div>No summary data available</div>;
     }
@@ -291,9 +245,6 @@ export const TestSummary = () => {
 
     return (
         <div>
-            {/*{heatmapData.map((groupHeatmapArgs) => (*/}
-            {/*    <GroupHeatmap groupName={groupHeatmapArgs.groupName} projectTestRuns={groupHeatmapArgs.projectTestRuns}/>*/}
-            {/*))}*/}
             <GroupHeatmapGrid/>
             <List
                 {...listProps}
@@ -305,15 +256,5 @@ export const TestSummary = () => {
                 }}
             />
         </div>
-
-        // <List
-        //     {...listProps}
-        //     renderItem={renderListItem}
-        //     pagination={{
-        //         ...listProps.pagination,
-        //         position: "bottom",
-        //         size: "small",
-        //     }}
-        // />
     );
 };
