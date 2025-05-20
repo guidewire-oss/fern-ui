@@ -3,7 +3,8 @@ import React from "react";
 import { TestSummary } from "../../src/pages/test-summaries";
 import TestHistoryGrid from "../../src/pages/test-summaries/summary-utils";
 import {useSimpleList} from "@refinedev/antd";
-import {render, screen} from "@testing-library/react";
+import {cleanup, fireEvent, render, screen, waitFor} from "@testing-library/react";
+import * as userPreferredProvider from "../../src/providers/user-prreferred-provider";
 
 jest.mock('@refinedev/antd', () => {
     const originalModule = jest.requireActual('@refinedev/antd');
@@ -13,13 +14,24 @@ jest.mock('@refinedev/antd', () => {
     };
 });
 
+jest.mock('../../src/providers/user-prreferred-provider', () => ({
+    fetchPreferredProjects: jest.fn(),
+    savePreferredProjects: jest.fn(),
+}));
+
+const mockedUserPreferredProvider = userPreferredProvider as jest.Mocked<typeof userPreferredProvider>;
+
+
 describe('TestSummary Component Tests', () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });
 
+    afterEach(() => {
+        cleanup();
+    });
+
     test('displays the title and table headers correctly', () => {
-        // Mock useSimpleList to return data
         (useSimpleList as jest.Mock).mockReturnValue({
             listProps: {
                 dataSource: [
@@ -86,4 +98,97 @@ describe('TestSummary Component Tests', () => {
         expect(screen.getByText('No test data available.')).toBeInTheDocument();
     });
 
+    test('should open group dropdown overlay when clicking "Add to group" menu item', async () => {
+        (useSimpleList as jest.Mock).mockReturnValue({
+            listProps: {
+                dataSource: [reportProject],
+                pagination: {},
+            },
+        });
+
+        render(<TestSummary/>);
+
+        const menuButton = screen.getByLabelText('Project 1 menu');
+        fireEvent.click(menuButton);
+
+        const addToGroupOption = await screen.findByText('Add to group');
+
+        fireEvent.click(addToGroupOption);
+
+        expect(await screen.findByText('Group Name')).toBeInTheDocument();
+    });
+
+    test('should open group dropdown overlay when clicking "Add to group" menu item 1', async () => {
+        (useSimpleList as jest.Mock).mockReturnValue({
+            listProps: {
+                dataSource: [reportProject],
+                pagination: {},
+            },
+        });
+
+        render(<TestSummary/>);
+
+        const menuButton = screen.getByLabelText('Project 1 menu');
+        fireEvent.click(menuButton);
+
+        const addToGroupOption = await screen.findByText('Add to group');
+
+        fireEvent.click(addToGroupOption);
+
+        expect(await screen.findByText('Group Name')).toBeInTheDocument();
+    });
+
+
+    test('should fetch groups when dropdown overlay is opened', async () => {
+        (useSimpleList as jest.Mock).mockReturnValue({
+            listProps: {
+                dataSource: [reportProject],
+                pagination: {},
+            },
+        });
+
+        render(<TestSummary/>);
+
+        const menuButton = screen.getByLabelText('Project 1 menu');
+        fireEvent.click(menuButton);
+
+        const addToGroupOption = await screen.findByText('Add to group');
+        fireEvent.click(addToGroupOption);
+
+        await screen.findByText('Group Name');
+
+        expect(userPreferredProvider.fetchPreferredProjects).toHaveBeenCalled();
+    });
+
+
+    test('should close the overlay when clicking the close button', async () => {
+        mockedUserPreferredProvider.fetchPreferredProjects.mockResolvedValue([
+            {group_id: 1, group_name: "Dummy group", projects: []}
+        ]);
+
+        (useSimpleList as jest.Mock).mockReturnValue({
+            listProps: {
+                dataSource: [reportProject],
+                pagination: {},
+            },
+        });
+
+        render(<TestSummary/>);
+
+        const menuButton = screen.getByLabelText('Project 1 menu');
+        fireEvent.click(menuButton);
+
+        const addToGroupOption = await screen.findByText('Add to group');
+        fireEvent.click(addToGroupOption);
+
+
+        await screen.findByText('Group Name');
+
+        const closeButton = screen.getByLabelText('Project 1 close menu');
+        fireEvent.click(closeButton);
+
+        await waitFor(() => {
+            expect(screen.queryByText('Group Name')).not.toBeInTheDocument();
+        });
+    });
 });

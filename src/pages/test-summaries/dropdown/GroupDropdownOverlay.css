@@ -1,0 +1,23 @@
+.group-dropdown-overlay {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    padding: 24px;
+    width: 400px;
+    max-width: 90%;
+}
+.group-dropdown-select {
+    width: 100%;
+}
+.group-dropdown-add-option {
+    padding: 5px;
+    cursor: pointer;
+}
+.group-dropdown-save-button {
+    margin-top: 10px;
+    width: 100%;
+}
