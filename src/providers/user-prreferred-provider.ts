@@ -6,7 +6,6 @@ if (!import.meta.env.VITE_FERN_REPORTER_BASE_URL) {
 
 export const API_URL = import.meta.env.VITE_FERN_REPORTER_BASE_URL;
 
-// ----- Types -----
 export interface ProjectSummary {
     uuid: string;
     name: string;
@@ -21,7 +20,7 @@ export interface GroupedProjectsResponse {
 export interface GroupedProjectsRequest {
     group_id?: number;
     group_name: string;
-    projects: string[]; // only UUIDs
+    projects: string[];
 }
 
 export interface PreferenceResponse {
