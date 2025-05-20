@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { useSimpleList } from "@refinedev/antd";
-import { Button, Card, Dropdown, List, Menu, message } from "antd";
-import { HttpError } from "@refinedev/core";
+import React, {useEffect, useState} from 'react';
+import {useSimpleList} from "@refinedev/antd";
+import {Button, Card, Dropdown, List, message, Switch} from "antd";
+import {HttpError} from "@refinedev/core";
 import TestHistoryGrid from "./summary-utils";
-import { MenuOutlined } from "@ant-design/icons";
-import {
-    fetchPreferredProjects
-} from "../../providers/user-prreferred-provider";
-import { GroupHeatmapGrid } from "./heatmap/GroupHeatmapGrid";
-import { GroupDropdownOverlay } from "./dropdown/GroupDropdownOverlay";
+import {MenuOutlined, StarFilled, StarOutlined} from "@ant-design/icons";
+import {fetchPreferredProjects} from "../../providers/user-prreferred-provider";
+import {GroupHeatmapGrid} from "./heatmap/GroupHeatmapGrid";
+import {GroupDropdownOverlay} from "./dropdown/GroupDropdownOverlay";
+import {useFavorite} from '../../hooks/useFavorite';
+import {useMessageProvider} from '../../hooks/useMessageProvider';
 
 interface Group {
     id: number;
@@ -80,16 +80,67 @@ export const TestSummary = () => {
         dataProviderName: "summaries",
     });
 
+    const { favorites, toggleFavorite, fetchFavorites} = useFavorite();
+    const { success, error } = useMessageProvider();
+
+    // State to control whether to show only favorites
+    const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+
+    useEffect(() => {
+        (async () => {
+            try {
+                await fetchFavorites();
+            } catch {
+                error("Unable to load favorites. Please try again.");
+            }
+        })();
+    }, [fetchFavorites]);
+
+
     if (!listProps.dataSource || listProps.dataSource.length === 0) {
         return <div>No summary data available</div>;
     }
 
+    const filteredDataSource = showFavoritesOnly
+        ? listProps.dataSource.filter((item: any) => favorites.has(item.uuid))
+        : listProps.dataSource;
+
+    const handleFavoriteToggle = async (projectUUID: string, isFavorite: boolean) => {
+        try {
+            await toggleFavorite(projectUUID, isFavorite);
+
+            if (!isFavorite) {
+                success("Added to favorites");
+            } else {
+                success("Removed from favorites");
+            }
+        } catch (err) {
+            error("An error occurred while toggling the favorite.");
+        }
+    };
+
     const renderListItem = (item: any, index: number) => {
+        const isFavorite = favorites.has(item.uuid);
         return (
             <Card
                 key={index}
                 hoverable
-                title={item.name}
+                title={
+                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                        {item.name}
+                        <Button
+                            type="text"
+                            onClick={ () => handleFavoriteToggle(item.uuid, isFavorite)}
+                            icon={
+                                isFavorite ? (
+                                    <StarFilled style={{ color: "#faad14", fontSize: "24px" }} />
+                                ) : (
+                                    <StarOutlined style={{ color: "#d9d9d9", fontSize: "24px" }} />
+                                )
+                            }
+                        />
+                    </div>
+                }
                 style={{ textAlign: 'center', marginBottom: '16px', width: '100%' }}
                 extra={
                     <Dropdown menu={menu(item.id, item)} trigger={['click']}>
@@ -111,18 +162,28 @@ export const TestSummary = () => {
         );
     };
 
-    return (
-        <div>
-            <GroupHeatmapGrid/>
-            <List
-                {...listProps}
-                renderItem={renderListItem}
-                pagination={{
-                    ...listProps.pagination,
-                    position: "bottom",
-                    size: "small",
-                }}
-            />
-        </div>
-    );
+        return (
+            <div>
+                <div style={{ marginBottom: "16px", textAlign: "right", paddingRight: "28px" }}>
+                    <Switch
+                        checked={showFavoritesOnly}
+                        onChange={() => setShowFavoritesOnly((prev) => !prev)}
+                        checkedChildren="Favorites Only"
+                        unCheckedChildren="All Projects"
+                        style={{ transform: "scale(1.5)" }}
+                    />
+                </div>
+                <GroupHeatmapGrid/>
+                <List
+                    {...listProps}
+                    dataSource={filteredDataSource}
+                    renderItem={renderListItem}
+                    pagination={{
+                        ...listProps.pagination,
+                        position: "bottom",
+                        size: "small",
+                    }}
+                />
+            </div>
+        );
 };
