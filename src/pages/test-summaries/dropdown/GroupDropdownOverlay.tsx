@@ -20,7 +20,6 @@ interface GroupDropdownOverlayProps {
     loading: boolean;
     selectedProject: Project | null;
     onClose: () => void;
-    fetchGroups: () => Promise<void>;
 }
 
 export const GroupDropdownOverlay: React.FC<GroupDropdownOverlayProps> = ({
@@ -28,7 +27,6 @@ export const GroupDropdownOverlay: React.FC<GroupDropdownOverlayProps> = ({
                                                                               loading,
                                                                               selectedProject,
                                                                               onClose,
-                                                                              fetchGroups
                                                                           }) => {
     const [selectedGroup, setSelectedGroup] = React.useState<string>("");
     const [searchValue, setSearchValue] = React.useState('');
@@ -96,6 +94,7 @@ export const GroupDropdownOverlay: React.FC<GroupDropdownOverlayProps> = ({
             className="group-dropdown-overlay"
             extra={
                 <Button
+                    aria-label={`Project ${selectedProject?.id} close menu`}
                     type="text"
                     onClick={onClose}
                     icon={<CloseOutlined />}
@@ -103,6 +102,7 @@ export const GroupDropdownOverlay: React.FC<GroupDropdownOverlayProps> = ({
             }
         >
             <Select
+                aria-label={`Project ${selectedProject?.id} group dropdown`}
                 showSearch
                 value={selectedGroup}
                 placeholder="Select or add group"

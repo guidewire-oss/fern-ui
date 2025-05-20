@@ -64,11 +64,16 @@ export const TestSummary = () => {
         setSelectedProject(null);
     };
 
-    const menu = (recordId: string, project: Project) => (
-        <Menu onClick={({ key }) => handleMenuClick({ key }, recordId, project)} >
-            <Menu.Item key="add_to_group">Add to group</Menu.Item>
-        </Menu>
-    );
+    const menu = (recordId: string, project: Project) => ({
+        items: [
+            {
+                key: 'add_to_group',
+                label: 'Add to group',
+            },
+        ],
+        onClick: ({ key }: { key: string }) => handleMenuClick({ key }, recordId, project),
+    });
+
 
     const { listProps } = useSimpleList<string[], HttpError>({
         resource: "projects/",
@@ -87,8 +92,8 @@ export const TestSummary = () => {
                 title={item.name}
                 style={{ textAlign: 'center', marginBottom: '16px', width: '100%' }}
                 extra={
-                    <Dropdown overlay={menu(item.id, item)} trigger={['click']}>
-                        <Button type="text" icon={<MenuOutlined />} />
+                    <Dropdown menu={menu(item.id, item)} trigger={['click']}>
+                        <Button aria-label={`Project ${item.id} menu`} data-testid={`Project ${item.id} menu`} type="text" icon={<MenuOutlined />} />
                     </Dropdown>
                 }
             >
@@ -100,7 +105,6 @@ export const TestSummary = () => {
                         loading={loading}
                         selectedProject={selectedProject}
                         onClose={handleCloseDropdown}
-                        fetchGroups={fetchGroups}
                     />
                 )}
             </Card>

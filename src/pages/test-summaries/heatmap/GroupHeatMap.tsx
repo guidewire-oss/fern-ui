@@ -33,10 +33,13 @@ export const GroupHeatmap = (groupHeatmapArgs: GroupHeatmapProps) => {
 
     return (
         <div className="group-heatmap">
-            <div className="heatmap-label" style={{width: `${gridWidth}px`}}>
+            <div className="heatmap-label"
+                 data-testid="group-heatmap"
+                 style={{width: `${gridWidth}px`}}
+            >
                 {groupHeatmapArgs.groupName}
             </div>
-            <div className="heatmap-grid-square" style={gridStyle}>
+            <div className="heatmap-grid-square" data-testid="heatmap-grid-square"  style={gridStyle}>
                 {groupHeatmapArgs.projectTestRuns.map((proj, idx) => (
                     <HeatmapTile
                         key={idx}

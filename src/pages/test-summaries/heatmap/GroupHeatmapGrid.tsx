@@ -46,13 +46,13 @@ export const GroupHeatmapGrid = () => {
                             name: project.name,
                             status: testRuns[0]?.status ?? 'UNKNOWN',
                             passed: suiteRuns.filter((suite) =>
-                                suite.spec_runs?.some((spec) => spec.status === "PASSED")
+                                suite.spec_runs?.some((spec) => (spec.status?.toUpperCase() ?? "") === "PASSED")
                             ).length,
                             failed: suiteRuns.filter((suite) =>
-                                suite.spec_runs?.some((spec) => spec.status === "FAILED")
+                                suite.spec_runs?.some((spec) => (spec.status?.toUpperCase() ?? "") === "FAILED")
                             ).length,
                             skipped: suiteRuns.filter((suite) =>
-                                suite.spec_runs?.some((spec) => spec.status === "SKIPPED")
+                                suite.spec_runs?.some((spec) => (spec.status?.toUpperCase() ?? "") === "SKIPPED")
                             ).length,
                             executionTime: testRuns[0].end_time
                         };
@@ -77,9 +77,9 @@ export const GroupHeatmapGrid = () => {
 
 
     return (
-        <div className="heatmap-grid-container">
+        <div className="heatmap-grid-container" data-testid="heatmap-grid-containe">
             {heatmapData.map((groupHeatmapArgs) => (
-                <div key={1} className="heatmap-group-block">
+                <div key={groupHeatmapArgs.groupId} className="heatmap-group-block">
                     <GroupHeatmap groupName={groupHeatmapArgs.groupName}
                                   projectTestRuns={groupHeatmapArgs.projectTestRuns}/>
                 </div>

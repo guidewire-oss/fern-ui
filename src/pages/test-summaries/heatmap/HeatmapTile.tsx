@@ -15,6 +15,7 @@ export const HeatmapTile: React.FC<HeatmapTileProps> = ({name, status, passed, f
     const total = passed + failed + skipped
     return (
         <Tooltip
+            data-testid="tooltip"
             title={
                 <>
                     <div>
