@@ -1,12 +1,13 @@
 import axios from "axios";
 import { API_URL } from "./testrun-provider";
+import {getAuthHeaders} from "../utils/authHeaders";
 
 export const favoritesProvider = {
     // Fetch all favorite projects
     fetchFavorites: async () => {
         const url = `${API_URL}/user/favourite`;
         try {
-            const { data } = await axios.get(url, { withCredentials: true });
+            const { data } = await axios.get(url, { withCredentials: true, headers: getAuthHeaders(),});
             return new Set<string>(data);
         } catch (error) {
             console.error("Failed to fetch favorites:", error);
@@ -21,7 +22,7 @@ export const favoritesProvider = {
             const response = await axios.post(
                 url,
                 { favourite: projectUUID },
-                { withCredentials: true }
+                { withCredentials: true, headers: getAuthHeaders() }
             );
             if (response.status === 201) {
                 return projectUUID;
@@ -39,7 +40,8 @@ export const favoritesProvider = {
     unmarkAsFavorite: async (projectUUID: string) => {
         const url = `${API_URL}/user/favourite/${projectUUID}`;
         try {
-            const response = await axios.delete(url, { withCredentials: true });
+            const response = await axios.delete(url, { withCredentials: true,
+                headers: getAuthHeaders() });
             if (response.status === 200) {
                 return projectUUID;
             } else {

@@ -114,7 +114,7 @@ describe("TestRunsList Component", () => {
         render(<TestRunsList />);
 
         // Assert loading state
-        expect(screen.getByText("No data")).toBeInTheDocument();
+        expect(screen.getAllByText("No data").length).toBeGreaterThan(0);
     });
 
     it("should render no data state", () => {

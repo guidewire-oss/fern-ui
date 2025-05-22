@@ -1,3 +1,6 @@
+import { config } from "dotenv";
+config()
+
 export default {
     preset: 'ts-jest',
     setupFilesAfterEnv: ['<rootDir>/setupTests.ts'],
