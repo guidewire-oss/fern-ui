@@ -1,6 +1,6 @@
 import type { RefineThemedLayoutV2HeaderProps } from "@refinedev/antd";
 import { useGetIdentity } from "@refinedev/core";
-import { UserOutlined } from '@ant-design/icons';
+import { UserOutlined, SettingOutlined } from '@ant-design/icons';
 import {
     Avatar,
     Layout as AntdLayout,
@@ -81,6 +81,16 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
         onClick: () => navigate(tab.path)
     }));
 
+    // User dropdown menu items
+    const userMenuItems = [
+        {
+            key: 'preferences',
+            icon: <SettingOutlined />,
+            label: 'User Preferences',
+            onClick: () => navigate('/preferences')
+        }
+    ];
+
     const isMobile = windowWidth < 768;
 
     return (
@@ -142,18 +152,23 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
                     defaultChecked={mode === "dark"}
                     checked={mode === "dark"} // ensures that both switches stay in sync since they're both controlled by the same ColorModeContext state
                 />
-                <Space
-                    style={{ marginLeft: "8px", cursor: "pointer" }}
-                    size="middle"
-                    onClick={() => navigate("/preferences")}
+                <Dropdown 
+                    menu={{ items: userMenuItems }} 
+                    placement="bottom"
+                    trigger={['hover']}
+                >
+                    <Space
+                        style={{ marginLeft: "2px", cursor: "pointer" }}
+                        size="middle"
                     >
-                    {user?.name && <Text strong>{user.name}</Text>}
-
-                    <Avatar
-                        src={user?.avatar || null}
-                        icon={!user?.avatar ? <UserOutlined /> : null}
-                        alt={user?.name} />
+                        {user?.name && <Text strong>{user.name}</Text>}
+                        <Avatar
+                            src={user?.avatar || null}
+                            icon={!user?.avatar ? <UserOutlined /> : null}
+                            alt={user?.name} 
+                        />
                     </Space>
+                </Dropdown>
                 </Space>
             </div>
         </AntdLayout.Header>

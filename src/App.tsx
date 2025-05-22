@@ -26,7 +26,7 @@ import moment from 'moment-timezone';
 
 const NoSider: React.FC = () => null; // to hide the side-navbar
 
-function App() {
+function AppContent() {
     const { setMode } = useContext(ColorModeContext);
     const [timezone, setTimezone] = useState(moment.tz.guess());
     const [isUserPreferencesLoaded, setIsUserPreferencesLoaded] = useState(false);
@@ -47,7 +47,6 @@ function App() {
         };
         initUserPreferences();
     }, []);
-    
 
     if (!isUserPreferencesLoaded) {
         return <LoadingSpinner />;
@@ -141,6 +140,14 @@ function App() {
                 </ColorModeContextProvider>
             </RefineKbarProvider>
         </BrowserRouter>
+    );
+}
+
+function App() {
+    return (
+        <ColorModeContextProvider>
+            <AppContent />
+        </ColorModeContextProvider>
     );
 }
 

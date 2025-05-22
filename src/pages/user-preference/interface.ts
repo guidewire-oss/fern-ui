@@ -4,6 +4,7 @@ export interface IUserPreference {
 }
 
 export interface IProjectGroup {
+    group_id?: number;
     group_name: string;
     projects: IProject[];
 }
