@@ -1,5 +1,7 @@
+import { Refine, Authenticated } from '@refinedev/core';
+import { authProvider } from "./authProvider";
+import { LoginPage } from "./pages/LoginPage";
 import './index.css';
-import {Refine,} from '@refinedev/core';
 import {DevtoolsPanel, DevtoolsProvider} from "@refinedev/devtools";
 import {RefineKbar, RefineKbarProvider} from "@refinedev/kbar";
 
@@ -19,6 +21,7 @@ import {graphqlDataProvider} from "./providers/testrun-graphql-provider";
 import {summaryProvider} from "./providers/summary-provider";
 import {TestRunsList} from "./pages/test-runs";
 import {TestSummary} from "./pages/test-summaries";
+import {Callback} from "./pages/Callback";
 
 const NoSider: React.FC = () => null; // to hide the side-navbar
 
@@ -32,6 +35,7 @@ function App() {
                     <AntdApp>
                         <DevtoolsProvider>
                             <Refine
+                                authProvider={authProvider}
                                 dataProvider={{
                                     default: graphqlDataProvider,
                                     testruns: graphqlDataProvider,
@@ -79,20 +83,25 @@ function App() {
                                             </ThemedLayoutV2>
                                         )}
                                     >
-                                        <Route index element={
-                                            <NavigateToResource resource="summaries"/>
-                                        }/>
-                                        <Route path="/testruns">
-                                            <Route index element={<TestRunsList/>}/>
-                                        </Route>
-                                        <Route path="/testruns/:suiteId">
-                                            <Route index element={<TestRunsList/>}/>
-                                        </Route>
-                                        <Route path="/testsummaries">
-                                            <Route index element={<TestSummary />} />
-                                        </Route>
-                                        <Route path="*" element={<ErrorComponent/>}/>
+                                        <Route index element={<NavigateToResource resource="summaries" />} />
+
+                                        <Route path="/testruns" element={
+                                            <Authenticated key="RunsList" fallback={<LoginPage />}>
+                                                <TestRunsList />
+                                            </Authenticated>
+                                        } />
+
+                                        <Route path="/testsummaries" element={
+                                            <Authenticated key="TestSummary" fallback={<LoginPage />}>
+                                                <TestSummary />
+                                            </Authenticated>
+                                        } />
+
+                                        <Route path="*" element={<ErrorComponent />} />
                                     </Route>
+
+                                    <Route path="/callback" element={<Callback />} />
+                                    <Route path="/login" element={<LoginPage />} />
                                 </Routes>
 
                                 <RefineKbar/>
