@@ -1,3 +1,4 @@
+import './index.css';
 import {Refine,} from '@refinedev/core';
 import {DevtoolsPanel, DevtoolsProvider} from "@refinedev/devtools";
 import {RefineKbar, RefineKbarProvider} from "@refinedev/kbar";
@@ -82,6 +83,9 @@ function App() {
                                             <NavigateToResource resource="summaries"/>
                                         }/>
                                         <Route path="/testruns">
+                                            <Route index element={<TestRunsList/>}/>
+                                        </Route>
+                                        <Route path="/testruns/:suiteId">
                                             <Route index element={<TestRunsList/>}/>
                                         </Route>
                                         <Route path="/testsummaries">

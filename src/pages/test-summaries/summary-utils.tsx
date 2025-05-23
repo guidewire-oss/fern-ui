@@ -36,7 +36,7 @@ const TestHistoryGrid: React.FC<TestHistoryGridProps> = ({ id, projectName, proj
                 content={
                     <>
                         <div>
-                            <div><b>{item.SuiteName}</b></div>
+                            <div><b>{item.SuiteRunID} - {item.SuiteName}</b></div>
                             <b>Passed: </b>
                             {item.TotalSpecRuns - item.TotalSkippedSpecRuns > 0 ? (
                                 <> {item.TotalPassedSpecRuns}/{item.TotalSpecRuns - item.TotalSkippedSpecRuns}
@@ -54,7 +54,7 @@ const TestHistoryGrid: React.FC<TestHistoryGridProps> = ({ id, projectName, proj
                 style={{marginRight: '10px'}}
             >
                 <div style={getBoxStyle(item)}
-                     onClick={() => window.open('/testruns/', '_blank')}>
+                     onClick={() => window.open(`/testruns/${item.SuiteRunID}`, '_blank')}>
                 </div>
             </Popover>
                 </List.Item>
