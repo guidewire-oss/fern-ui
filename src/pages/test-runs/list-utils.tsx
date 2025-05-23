@@ -31,8 +31,6 @@ export const testRunsStatus = (testRun: ITestRun) => {
     return statusMap;
 }
 
-
-
 export const uniqueTags = (specRuns: ISpecRun[]) => {
     const tags: ITag[] = [];
 
