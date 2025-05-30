@@ -1,5 +1,5 @@
 import { Refine, Authenticated } from '@refinedev/core';
-import { authProvider } from "./authProvider";
+import { authProvider } from "./providers/authProvider";
 import { LoginPage } from "./pages/LoginPage";
 import './index.css';
 import {DevtoolsPanel, DevtoolsProvider} from "@refinedev/devtools";

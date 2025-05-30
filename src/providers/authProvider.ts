@@ -57,7 +57,7 @@ const realAuthProvider: AuthBindings = {
     getIdentity: async () => {
         const token = JSON.parse(localStorage.getItem("auth") || "{}");
         if (token?.access_token) {
-            const res = await fetch(import.meta.env.VITE_OKTA_ISSUER + "/oauth2/v1/userinfo", {
+            const res = await fetch(process.env.VITE_OKTA_ISSUER + "/oauth2/v1/userinfo", {
                 headers: {
                     Authorization: `Bearer ${token.access_token}`,
                 },
@@ -81,8 +81,8 @@ const realAuthProvider: AuthBindings = {
     onError: async () => ({})
 };
 
-// Below code will be unnecessary when the authentication is REQUIRED
-const dummyAuthProvider: AuthBindings = {
+// Below code should be removed once Auth is implemented on Fern Reporter
+const disableAuthProvider: AuthBindings = {
     login: async () => ({ success: true }),
     logout: async () => ({ success: true }),
     check: async () => ({ authenticated: true }),
@@ -90,5 +90,5 @@ const dummyAuthProvider: AuthBindings = {
     onError: async () => ({}),
 };
 
-const ENABLE_AUTH = import.meta.env.VITE_ENABLE_AUTH === "true";
-export const authProvider = ENABLE_AUTH ? realAuthProvider : dummyAuthProvider;
+const ENABLE_AUTH = process.env.VITE_ENABLE_AUTH === "true";
+export const authProvider = ENABLE_AUTH ? realAuthProvider : disableAuthProvider;

@@ -2,11 +2,11 @@ import type { DataProvider } from "@refinedev/core";
 import axios from "axios";
 import {getAuthHeaders} from "../utils/authHeaders";
 
-if (!import.meta.env.VITE_FERN_REPORTER_BASE_URL) {
+if (!process.env.VITE_FERN_REPORTER_BASE_URL) {
     console.log('Error: FERN_REPORTER_BASE_URL is not set');
 }
 
-export const API_URL = import.meta.env.VITE_FERN_REPORTER_BASE_URL;
+export const API_URL = process.env.VITE_FERN_REPORTER_BASE_URL!;
 
 export const testrunProvider: DataProvider = {
     getList: async ({ resource}) => {
