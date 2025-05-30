@@ -16,6 +16,8 @@ import React, { useContext, useState, useEffect, useCallback } from "react";
 import { ColorModeContext } from "../../contexts/color-mode";
 import { useLocation, useNavigate } from "react-router-dom";
 import { debounce } from "../../utils/debounce";
+import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
+import { useLogout } from "@refinedev/core";
 
 const { Text } = Typography;
 const { useToken } = theme;
@@ -45,6 +47,21 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
         [handleResize]
     );
 
+    const { mutate: logout } = useLogout();
+
+    const avatarMenu = (
+        <Menu
+            items={[
+                {
+                    key: "logout",
+                    icon: <LogoutOutlined />,
+                    label: "Logout",
+                    onClick: () => logout(),
+                },
+            ]}
+        />
+    );
+
     useEffect(() => {
         window.addEventListener('resize', debouncedHandleResize);
         return () => window.removeEventListener('resize', debouncedHandleResize);
@@ -67,7 +84,7 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
     const navTabs = [
         { label: "Test Summary", key: "testsummaries", path: "/testsummaries" },
         { label: "Test Run", key: "testruns", path: "/testruns" },
-        
+
         // add more tabs here as needed in the future
     ];
 
@@ -83,11 +100,11 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
 
     return (
         <AntdLayout.Header style={headerStyles}>
-            <div style={{ 
-                display: "flex", 
-                justifyContent: "space-between", 
-                alignItems: "center", 
-                padding: "0 24px", 
+            <div style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "0 24px",
                 height: "64px",
                 flexWrap: "wrap"
             }}>
@@ -100,7 +117,7 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
                     {windowWidth > 480 && (
                         <Text strong style={{ fontSize: 20, whiteSpace: "nowrap" }}>Fern Reporter</Text>
                     )}
-                    
+
                     {!isMobile ? (
                         <Menu
                             mode="horizontal"
@@ -113,7 +130,7 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
                                 label: tab.label,
                                 key: tab.key,
                             }))}
-                            style={{ 
+                            style={{
                                 borderBottom: 'none',
                                 paddingLeft: '24px',
                                 backgroundColor: token.colorBgElevated,
@@ -121,15 +138,15 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
                         />
                     ) : (
                         <Dropdown menu={{ items: mobileMenuItems }} placement="bottomLeft">
-                            <Button 
-                                type="text" 
-                                icon={<MenuOutlined />} 
+                            <Button
+                                type="text"
+                                icon={<MenuOutlined />}
                                 style={{ marginLeft: 8 }}
                             />
                         </Dropdown>
                     )}
                 </Space>
-                
+
                 <Space align="center" style={{ flexWrap: "nowrap" }}>
                     <Switch
                         checkedChildren="🌛"
@@ -139,12 +156,16 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
                         }
                         defaultChecked={mode === "dark"}
                     />
-                    <Space style={{ marginLeft: "8px" }} size="middle">
-                        {user?.name && <Text strong>{user.name}</Text>}
-                        {user?.avatar && (
-                            <Avatar src={user?.avatar} alt={user?.name} />
-                        )}
-                    </Space>
+                    <Dropdown overlay={avatarMenu} placement="bottomRight" trigger={["click"]}>
+                        <Space style={{ marginLeft: "12px", cursor: "pointer" }}>
+                            {user?.name && <Text strong>{user.name}</Text>}
+                            <Avatar
+                                src={user?.avatar}
+                                icon={!user?.avatar && <UserOutlined />}
+                                alt={user?.name}
+                            />
+                        </Space>
+                    </Dropdown>
                 </Space>
             </div>
         </AntdLayout.Header>
