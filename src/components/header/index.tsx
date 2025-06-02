@@ -1,5 +1,6 @@
 import type { RefineThemedLayoutV2HeaderProps } from "@refinedev/antd";
 import { useGetIdentity } from "@refinedev/core";
+import { UserOutlined, SettingOutlined } from '@ant-design/icons';
 import {
     Avatar,
     Layout as AntdLayout,
@@ -16,6 +17,8 @@ import React, { useContext, useState, useEffect, useCallback } from "react";
 import { ColorModeContext } from "../../contexts/color-mode";
 import { useLocation, useNavigate } from "react-router-dom";
 import { debounce } from "../../utils/debounce";
+
+
 
 const { Text } = Typography;
 const { useToken } = theme;
@@ -79,6 +82,16 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
         onClick: () => navigate(tab.path)
     }));
 
+    // User dropdown menu items
+    const userMenuItems = [
+        {
+            key: 'preferences',
+            icon: <SettingOutlined />,
+            label: 'User Preferences',
+            onClick: () => navigate('/preferences')
+        }
+    ];
+
     const isMobile = windowWidth < 768;
 
     return (
@@ -131,20 +144,32 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
                 </Space>
                 
                 <Space align="center" style={{ flexWrap: "nowrap" }}>
-                    <Switch
-                        checkedChildren="🌛"
-                        unCheckedChildren="🔆"
-                        onChange={() =>
-                            setMode(mode === "light" ? "dark" : "light")
-                        }
-                        defaultChecked={mode === "dark"}
-                    />
-                    <Space style={{ marginLeft: "8px" }} size="middle">
+                <Switch
+                    checkedChildren="🌛"
+                    unCheckedChildren="🔆"
+                    onChange={() =>
+                        setMode(mode === "light" ? "dark" : "light")
+                    }
+                    defaultChecked={mode === "dark"}
+                    checked={mode === "dark"} // ensures that both switches stay in sync since they're both controlled by the same ColorModeContext state
+                />
+                <Dropdown 
+                    menu={{ items: userMenuItems }} 
+                    placement="bottom"
+                    trigger={['hover']}
+                >
+                    <Space
+                        style={{ marginLeft: "2px", cursor: "pointer" }}
+                        size="middle"
+                    >
                         {user?.name && <Text strong>{user.name}</Text>}
-                        {user?.avatar && (
-                            <Avatar src={user?.avatar} alt={user?.name} />
-                        )}
+                        <Avatar
+                            src={user?.avatar || null}
+                            icon={!user?.avatar ? <UserOutlined /> : null}
+                            alt={user?.name} 
+                        />
                     </Space>
+                </Dropdown>
                 </Space>
             </div>
         </AntdLayout.Header>
