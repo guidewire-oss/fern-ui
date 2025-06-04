@@ -13,7 +13,7 @@ import {
     generateTagColor
 } from "./list-utils";
 
-const HEADER_NAME = import.meta.env.VITE_FERN_REPORTER_HEADER_NAME;
+const HEADER_NAME = process.env.VITE_FERN_REPORTER_HEADER_NAME;
 
 export const TestRunsList = () => {
     const { suiteId } = useParams(); // for /testruns/:suiteId
@@ -37,6 +37,7 @@ export const TestRunsList = () => {
         },
     });
 
+    // Combine all pages into a single array
     const allData = data?.pages.flatMap((page) => page.data) || [];
 
     // Infinite scroll
@@ -179,7 +180,7 @@ export const TestRunsList = () => {
                         title="Git SHA"
                         key="gitSha"
                         render={(_text, testRun: ITestRun) => (
-                        <Typography.Paragraph 
+                        <Typography.Paragraph
                             style={{ color: 'inherit' }}>
                                 {testRun.gitSha}
                             </Typography.Paragraph>

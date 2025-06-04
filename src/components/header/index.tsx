@@ -1,6 +1,6 @@
 import type { RefineThemedLayoutV2HeaderProps } from "@refinedev/antd";
 import { useGetIdentity } from "@refinedev/core";
-import { UserOutlined, SettingOutlined } from '@ant-design/icons';
+import { LogoutOutlined, UserOutlined, SettingOutlined } from '@ant-design/icons';
 import {
     Avatar,
     Layout as AntdLayout,
@@ -17,8 +17,7 @@ import React, { useContext, useState, useEffect, useCallback } from "react";
 import { ColorModeContext } from "../../contexts/color-mode";
 import { useLocation, useNavigate } from "react-router-dom";
 import { debounce } from "../../utils/debounce";
-
-
+import { useLogout } from "@refinedev/core";
 
 const { Text } = Typography;
 const { useToken } = theme;
@@ -48,6 +47,8 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
         [handleResize]
     );
 
+    const { mutate: logout } = useLogout();
+
     useEffect(() => {
         window.addEventListener('resize', debouncedHandleResize);
         return () => window.removeEventListener('resize', debouncedHandleResize);
@@ -70,7 +71,7 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
     const navTabs = [
         { label: "Test Summary", key: "testsummaries", path: "/testsummaries" },
         { label: "Test Run", key: "testruns", path: "/testruns" },
-        
+
         // add more tabs here as needed in the future
     ];
 
@@ -89,6 +90,12 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
             icon: <SettingOutlined />,
             label: 'User Preferences',
             onClick: () => navigate('/preferences')
+        },
+        {
+            key: 'logmeout',
+            icon: <LogoutOutlined />,
+            label: 'Logout',
+            onClick: () => logout()
         }
     ];
 
@@ -96,11 +103,11 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
 
     return (
         <AntdLayout.Header style={headerStyles}>
-            <div style={{ 
-                display: "flex", 
-                justifyContent: "space-between", 
-                alignItems: "center", 
-                padding: "0 24px", 
+            <div style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "0 24px",
                 height: "64px",
                 flexWrap: "wrap"
             }}>
@@ -113,7 +120,7 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
                     {windowWidth > 480 && (
                         <Text strong style={{ fontSize: 20, whiteSpace: "nowrap" }}>Fern Reporter</Text>
                     )}
-                    
+
                     {!isMobile ? (
                         <Menu
                             mode="horizontal"
@@ -126,7 +133,7 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
                                 label: tab.label,
                                 key: tab.key,
                             }))}
-                            style={{ 
+                            style={{
                                 borderBottom: 'none',
                                 paddingLeft: '24px',
                                 backgroundColor: token.colorBgElevated,
@@ -134,15 +141,15 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
                         />
                     ) : (
                         <Dropdown menu={{ items: mobileMenuItems }} placement="bottomLeft">
-                            <Button 
-                                type="text" 
-                                icon={<MenuOutlined />} 
+                            <Button
+                                type="text"
+                                icon={<MenuOutlined />}
                                 style={{ marginLeft: 8 }}
                             />
                         </Dropdown>
                     )}
                 </Space>
-                
+
                 <Space align="center" style={{ flexWrap: "nowrap" }}>
                 <Switch
                     checkedChildren="🌛"
@@ -153,8 +160,8 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
                     defaultChecked={mode === "dark"}
                     checked={mode === "dark"} // ensures that both switches stay in sync since they're both controlled by the same ColorModeContext state
                 />
-                <Dropdown 
-                    menu={{ items: userMenuItems }} 
+                <Dropdown
+                    menu={{ items: userMenuItems }}
                     placement="bottom"
                     trigger={['hover']}
                 >
@@ -166,7 +173,7 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
                         <Avatar
                             src={user?.avatar || null}
                             icon={!user?.avatar ? <UserOutlined /> : null}
-                            alt={user?.name} 
+                            alt={user?.name}
                         />
                     </Space>
                 </Dropdown>
