@@ -1,11 +1,16 @@
-const clientId = process.env.VITE_OKTA_CLIENT_ID;
-const issuer = process.env.VITE_OKTA_ISSUER;
+const enableAuth = process.env.VITE_ENABLE_AUTH === "true";
+let clientId: string | undefined;
+let issuer: string | undefined;
 
-if (!clientId) {
-    throw new Error("Missing VITE_OKTA_CLIENT_ID environment variable");
-}
-if (!issuer) {
-    throw new Error("Missing VITE_OKTA_ISSUER environment variable");
+if (enableAuth) {
+    clientId = process.env.VITE_OKTA_CLIENT_ID;
+    issuer = process.env.VITE_OKTA_ISSUER;
+    if (typeof clientId == "undefined") {
+        throw new Error("Missing VITE_OKTA_CLIENT_ID environment variable");
+    }
+    if (typeof issuer == "undefined") {
+        throw new Error("Missing VITE_OKTA_ISSUER environment variable");
+    }
 }
 
 export const oktaConfig = {
@@ -38,7 +43,7 @@ export const redirectToOkta = async () => {
     localStorage.setItem("okta_state", state);
 
     const url = new URL(`${oktaConfig.issuer}/v1/authorize`);
-    url.searchParams.set("client_id", oktaConfig.clientId);
+    url.searchParams.set("client_id", oktaConfig.clientId!);
     url.searchParams.set("response_type", "code");
     url.searchParams.set("scope", oktaConfig.scopes);
     url.searchParams.set("redirect_uri", oktaConfig.redirectUri);

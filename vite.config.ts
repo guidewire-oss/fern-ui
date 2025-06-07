@@ -5,9 +5,9 @@ export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd());
 
     // Filter only VITE_ variables
-    const viteEnv = Object.entries(env).reduce((acc, [key, val]) => {
-        if (key.startsWith('VITE_')) {
-            acc[`process.env.${key}`] = JSON.stringify(val);
+    const viteEnv = Object.entries(env).reduce<Record<string, string>>((acc, [key, val]) => {
+        if (key.startsWith("VITE_")) {
+            acc[`process.env.${key}`] = JSON.stringify(val || "");
         }
         return acc;
     }, {});

@@ -1,6 +1,6 @@
 import { AuthBindings } from "@refinedev/core";
 
-const realAuthProvider: AuthBindings = {
+export const realAuthProvider: AuthBindings = {
     login: async ({ username, password, provider }) => {
         if (provider) {
             if( provider == "okta") {
@@ -91,4 +91,8 @@ const disableAuthProvider: AuthBindings = {
 };
 
 const ENABLE_AUTH = process.env.VITE_ENABLE_AUTH === "true";
-export const authProvider = ENABLE_AUTH ? realAuthProvider : disableAuthProvider;
+export let authProvider = ENABLE_AUTH ? realAuthProvider : disableAuthProvider;
+
+export function setAuthProvider(provider: AuthBindings) {
+    authProvider = provider;
+}
