@@ -29,7 +29,7 @@ export const Callback = () => {
                         },
                         body: new URLSearchParams({
                             grant_type: "authorization_code",
-                            client_id: oktaConfig.clientId,
+                            client_id: oktaConfig.clientId || "",
                             redirect_uri: oktaConfig.redirectUri,
                             code: code || "",
                             code_verifier: verifier || "",

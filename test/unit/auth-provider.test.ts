@@ -1,9 +1,10 @@
-import { authProvider } from "../../src/providers/auth-provider";
+import {authProvider, realAuthProvider, setAuthProvider} from "../../src/providers/auth-provider";
 
 // Setup localStorage mock
 beforeEach(() => {
     localStorage.clear();
     jest.restoreAllMocks();
+    setAuthProvider(realAuthProvider)
 });
 
 describe("authProvider", () => {
