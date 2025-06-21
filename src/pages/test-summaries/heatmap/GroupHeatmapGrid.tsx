@@ -1,9 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {GroupHeatmap, GroupHeatmapProps} from "./GroupHeatMap";
 import "./HeatmapStyles.css";
-import {fetchPreferredProjects} from "../../../providers/user-prreferred-provider";
-import {fetchTestRuns} from "../../../providers/testrun-provider";
 import {message} from "antd";
+import {fetchProjectGroups} from "../../../providers/testrun-provider";
 
 export interface ProjectTestRunStatus {
     id: number
@@ -13,7 +12,8 @@ export interface ProjectTestRunStatus {
     passed: number
     failed: number
     skipped: number
-    executionTime: string
+    executionTime: string,
+    branch: string
 }
 
 export const GroupHeatmapGrid = () => {
@@ -22,40 +22,26 @@ export const GroupHeatmapGrid = () => {
     useEffect(() => {
         const fetchHeatmapData = async () => {
             try {
-                const groupedProjectsResponses = await fetchPreferredProjects();
+                const groupedProjectsResponses = await fetchProjectGroups();
+
+                console.log(groupedProjectsResponses);
 
                 const result: GroupHeatmapProps[] = []
 
                 for (const group of groupedProjectsResponses) {
-
                     const projectTestRunsArr: ProjectTestRunStatus[] = []
-                    for (const project of group.projects) {
-
-                        const testRuns = await fetchTestRuns({
-                            filters : {"project_uuid" : project.uuid},
-                            fields: ['project', 'suiteruns'],
-                            sortBy: 'end_time',
-                            order: 'desc'
-                        })
-
-                        const suiteRuns = testRuns[0]?.suite_runs ?? [];
-
+                    for(const project of group.projects){
                         const projectTestRuns: ProjectTestRunStatus = {
                             id: 0,
                             uuid: project.uuid,
                             name: project.name,
-                            status: testRuns[0]?.status ?? 'UNKNOWN',
-                            passed: suiteRuns.filter((suite) =>
-                                suite.spec_runs?.some((spec) => (spec.status?.toUpperCase() ?? "") === "PASSED")
-                            ).length,
-                            failed: suiteRuns.filter((suite) =>
-                                suite.spec_runs?.some((spec) => (spec.status?.toUpperCase() ?? "") === "FAILED")
-                            ).length,
-                            skipped: suiteRuns.filter((suite) =>
-                                suite.spec_runs?.some((spec) => (spec.status?.toUpperCase() ?? "") === "SKIPPED")
-                            ).length,
-                            executionTime: testRuns[0].end_time
-                        };
+                            status: project.status,
+                            passed: project.test_passed,
+                            failed: project.test_failed,
+                            skipped: project.test_skipped,
+                            executionTime: project.date,
+                            branch: project.git_branch
+                        }
                         projectTestRunsArr.push(projectTestRuns)
                     }
                     const groupHeatmapArgs: GroupHeatmapProps = {
@@ -65,6 +51,7 @@ export const GroupHeatmapGrid = () => {
                     }
                     result.push(groupHeatmapArgs)
                 }
+                console.log("Heatmap data fetched:", result);
                 setHeatmapData(result);
             } catch (error) {
                 message.error("Failed to fetch group data")

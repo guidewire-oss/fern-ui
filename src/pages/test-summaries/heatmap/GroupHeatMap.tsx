@@ -29,17 +29,15 @@ export const GroupHeatmap = (groupHeatmapArgs: GroupHeatmapProps) => {
         gridTemplateColumns: `repeat(${numCols}, 32px)`
     };
 
-    const gridWidth = numCols * 32 + (numCols - 1) * 4;
-
     return (
         <div className="group-heatmap">
             <div className="heatmap-label"
                  data-testid="group-heatmap"
-                 style={{width: `${gridWidth}px`}}
+                 title={groupHeatmapArgs.groupName} // Add title attribute for full text on hover
             >
                 {groupHeatmapArgs.groupName}
             </div>
-            <div className="heatmap-grid-square" data-testid="heatmap-grid-square"  style={gridStyle}>
+            <div className="heatmap-grid-square" data-testid="heatmap-grid-square" style={gridStyle}>
                 {groupHeatmapArgs.projectTestRuns.map((proj, idx) => (
                     <HeatmapTile
                         key={idx}

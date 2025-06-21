@@ -161,7 +161,7 @@ describe('Heatmap Components', () => {
 
         beforeEach(() => {
             jest.clearAllMocks();
-            (userPreferredProvider.fetchPreferredProjects as jest.Mock).mockResolvedValue(mockGroupData);
+            (testrunProvider.fetchProjectGroups as jest.Mock).mockResolvedValue(mockGroupData);
             (testrunProvider.fetchTestRuns as jest.Mock).mockResolvedValue(mockTestRunData);
         });
 
@@ -169,7 +169,7 @@ describe('Heatmap Components', () => {
             render(<GroupHeatmapGrid />);
 
             await waitFor(() => {
-                expect(userPreferredProvider.fetchPreferredProjects).toHaveBeenCalledTimes(1);
+                expect(testrunProvider.fetchProjectGroups).toHaveBeenCalledTimes(1);
                 expect(testrunProvider.fetchTestRuns).toHaveBeenCalledTimes(3);
             });
 
@@ -187,7 +187,7 @@ describe('Heatmap Components', () => {
             const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {
                 // intentionally left blank
             });
-            (userPreferredProvider.fetchPreferredProjects as jest.Mock).mockRejectedValue(new Error('API error'));
+            (testrunProvider.fetchProjectGroups as jest.Mock).mockRejectedValue(new Error('API error'));
 
             const antd = jest.requireMock('antd');
 

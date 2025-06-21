@@ -43,6 +43,9 @@ export const GroupDropdownOverlay: React.FC<GroupDropdownOverlayProps> = ({
     const saveGroup = async (groupName: string) => {
         try {
             let groupedProjectsResponseArr = await fetchPreferredProjects();
+
+            console.log("groupedProjectsResponseArr", groupedProjectsResponseArr)
+
             const groupAlreadyExists = groupedProjectsResponseArr == null ? false : (groupedProjectsResponseArr
                 .filter(groupedProjectsResponse => groupedProjectsResponse.group_name === groupName)
                 .length === 1)
@@ -68,6 +71,8 @@ export const GroupDropdownOverlay: React.FC<GroupDropdownOverlayProps> = ({
                     })
                 );
             }
+
+            console.log("groupProjectRequest", groupProjectRequest)
 
             await savePreferredProjects(groupProjectRequest)
 

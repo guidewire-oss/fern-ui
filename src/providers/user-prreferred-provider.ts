@@ -28,6 +28,11 @@ export interface PreferenceResponse {
     preferred: GroupedProjectsResponse[];
 }
 
+export interface DeletePreferredRequest {
+    preferred: {
+        groupId: number;
+    }[];
+}
 
 export async function fetchPreferredProjects(): Promise<GroupedProjectsResponse[]> {
     const response = await axios.get<PreferenceResponse>(`${API_URL}/user/preferred`, {
@@ -56,12 +61,14 @@ export async function savePreferredProjects(preferred: GroupedProjectsRequest[])
     }
 }
 
-export async function deletePreferredProjects(): Promise<void> {
+export async function deletePreferredProjects(deletePreferredRequest : DeletePreferredRequest): Promise<void> {
+
     const response = await axios.delete(`${API_URL}/user/preferred`,{
         withCredentials: true, // Ensures cookies are included
-            headers: {
+        headers: {
             "Content-Type": "application/json",
         },
+        data: deletePreferredRequest
     });
     if (response.status !== 200 || response.data.status !== "deleted") {
         throw new Error("Failed to delete preferred projects");
