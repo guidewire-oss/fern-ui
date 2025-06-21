@@ -1,0 +1,9 @@
+.highlighted {
+  background-color: #fff3cd !important; /* pale yellow */
+  transition: background-color 1s ease;
+}
+
+/* Fading out highlight */
+.highlighted.fading-out {
+  background-color: inherit !important;
+}

@@ -1,12 +1,15 @@
 import type { DataProvider } from "@refinedev/core";
 import axios from "axios";
 import {API_URL} from "./testrun-provider";
+import {getAuthHeaders} from "../utils/authHeaders";
 
 
 export const summaryProvider: DataProvider = {
     getList: async ({ resource}) => {
         const url = `${API_URL}/reports/${resource}`;
-        const response = await axios.get(url);
+        const response = await axios.get(url, {
+            headers: getAuthHeaders(),
+        });
         if(resource.startsWith("projects")) {
             return {
                 data: response.data.projects,
@@ -15,8 +18,8 @@ export const summaryProvider: DataProvider = {
         }
         else if(resource.startsWith("summary")) {
             return {
-                data: response.data,
-                total: response.data.total,
+                data: response?.data,
+                total: response?.data?.total,
             };
         }
         return {
@@ -26,7 +29,9 @@ export const summaryProvider: DataProvider = {
     },
 
     getOne: async ({resource, id}) => {
-        const response = await axios(`${API_URL}/reports/${resource}/${id}`);
+        const response = await axios(`${API_URL}/reports/${resource}/${id}`, {
+            headers: getAuthHeaders(),
+        });
 
         if (response.status < 200 || response.status > 299) throw response;
 

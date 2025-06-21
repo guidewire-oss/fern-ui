@@ -1,4 +1,7 @@
-import {Refine,} from '@refinedev/core';
+import { Refine, Authenticated } from '@refinedev/core';
+import { authProvider } from "./providers/auth-provider";
+import { LoginPage } from "./pages/LoginPage";
+import './index.css';
 import {DevtoolsPanel, DevtoolsProvider} from "@refinedev/devtools";
 import {RefineKbar, RefineKbarProvider} from "@refinedev/kbar";
 
@@ -13,16 +16,45 @@ import routerBindings, {
     UnsavedChangesNotifier
 } from "@refinedev/react-router-v6";
 import {ColorModeContextProvider} from "./contexts/color-mode";
-import {Header} from "./components";
+import {Header, LoadingSpinner} from "./components";
 import {graphqlDataProvider} from "./providers/testrun-graphql-provider";
 import {summaryProvider} from "./providers/summary-provider";
 import {TestRunsList} from "./pages/test-runs";
 import {TestSummary} from "./pages/test-summaries";
+import {Callback} from "./pages/Callback";
+import {UserPreferencePage} from "./pages/user-preference"
+import { fetchUserPreference } from "./pages/user-preference/user-preference-utils";
+import { useContext, useEffect, useState } from 'react';
+import { ColorModeContext } from "../src/contexts/color-mode";
+import moment from 'moment-timezone';
 
 const NoSider: React.FC = () => null; // to hide the side-navbar
 
-function App() {
+function AppContent() {
+    const { setMode } = useContext(ColorModeContext);
+    const [timezone, setTimezone] = useState(moment.tz.guess());
+    const [isUserPreferencesLoaded, setIsUserPreferencesLoaded] = useState(false);
 
+    useEffect(() => {
+        const initUserPreferences = async () => {
+            try {
+                const userPref = await fetchUserPreference();
+                if (userPref) {
+                    setMode(userPref.isDark ? "dark" : "light");
+                    setTimezone(userPref.timezone);
+                }
+            } catch (err) {
+                console.error("Failed to load user preferences:", err);
+            } finally {
+                setIsUserPreferencesLoaded(true);
+            }
+        };
+        initUserPreferences();
+    }, []);
+
+    if (!isUserPreferencesLoaded) {
+        return <LoadingSpinner />;
+    }
 
     return (
         <BrowserRouter>
@@ -31,6 +63,7 @@ function App() {
                     <AntdApp>
                         <DevtoolsProvider>
                             <Refine
+                                authProvider={authProvider}
                                 dataProvider={{
                                     default: graphqlDataProvider,
                                     testruns: graphqlDataProvider,
@@ -58,6 +91,14 @@ function App() {
                                             dataProviderName: "summaries",
                                         },
                                     },
+                                    {
+                                        name: "preferences",
+                                        list: "/preferences",
+                                        meta: {
+                                            parent: "Test Reports",
+                                            dataProviderName: "userpreference",
+                                        },
+                                    },
                                 ]}
                                 options={{
                                     syncWithLocation: true,
@@ -78,17 +119,33 @@ function App() {
                                             </ThemedLayoutV2>
                                         )}
                                     >
-                                        <Route index element={
-                                            <NavigateToResource resource="summaries"/>
-                                        }/>
-                                        <Route path="/testruns">
+                                        <Route index element={<NavigateToResource resource="summaries" />} />
+
+                                        <Route path="/testruns" element={
+                                            <Authenticated key="RunsList" fallback={<LoginPage />}>
+                                                <TestRunsList />
+                                            </Authenticated>
+                                        } />
+
+                                        <Route path="/testruns/:suiteId">
                                             <Route index element={<TestRunsList/>}/>
                                         </Route>
-                                        <Route path="/testsummaries">
-                                            <Route index element={<TestSummary />} />
+
+                                        <Route path="/testsummaries" element={
+                                            <Authenticated key="TestSummary" fallback={<LoginPage />}>
+                                                <TestSummary />
+                                            </Authenticated>
+                                        } />
+
+                                        <Route path="/preferences">
+                                            <Route index element={<UserPreferencePage />} />
                                         </Route>
-                                        <Route path="*" element={<ErrorComponent/>}/>
+
+                                        <Route path="*" element={<ErrorComponent />} />
                                     </Route>
+
+                                    <Route path="/callback" element={<Callback />} />
+                                    <Route path="/login" element={<LoginPage />} />
                                 </Routes>
 
                                 <RefineKbar/>
@@ -101,6 +158,14 @@ function App() {
                 </ColorModeContextProvider>
             </RefineKbarProvider>
         </BrowserRouter>
+    );
+}
+
+function App() {
+    return (
+        <ColorModeContextProvider>
+            <AppContent />
+        </ColorModeContextProvider>
     );
 }
 

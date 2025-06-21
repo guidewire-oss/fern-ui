@@ -1,6 +1,7 @@
 import type {BaseRecord, DataProvider, GetListResponse, GetListParams} from "@refinedev/core";
 import { GraphQLClient } from "graphql-request";
 import { GET_TEST_RUNS, GET_TEST_RUN_BY_ID } from "../pages/test-runs/graphQlQueries";
+import {getAuthHeaders} from "../utils/authHeaders";
 
 // Check if the environment variable is set
 const VITE_FERN_REPORTER_GRAPHQL_BASE_URL = import.meta.env.VITE_FERN_REPORTER_GRAPHQL_BASE_URL;
@@ -76,7 +77,7 @@ export const graphqlDataProvider: DataProvider = {
                 first,
                 after,
                 isDescendingOrder,
-            });
+            }, getAuthHeaders());
 
             const edges = response.testRuns.edges || [];
             const { pageInfo, totalCount } = response.testRuns;
@@ -107,7 +108,7 @@ export const graphqlDataProvider: DataProvider = {
     // Fetch a single TestRun by ID
     getOne: async ({ id }) => {
         try {
-            const response: any = await client.request(GET_TEST_RUN_BY_ID, { id });
+            const response: any = await client.request(GET_TEST_RUN_BY_ID, { id }, getAuthHeaders());
             const testRun = response.testRunById;
 
             return { data: testRun };

@@ -1,5 +1,6 @@
 import type { RefineThemedLayoutV2HeaderProps } from "@refinedev/antd";
 import { useGetIdentity } from "@refinedev/core";
+import { LogoutOutlined, UserOutlined, SettingOutlined } from '@ant-design/icons';
 import {
     Avatar,
     Layout as AntdLayout,
@@ -16,6 +17,7 @@ import React, { useContext, useState, useEffect, useCallback } from "react";
 import { ColorModeContext } from "../../contexts/color-mode";
 import { useLocation, useNavigate } from "react-router-dom";
 import { debounce } from "../../utils/debounce";
+import { useLogout } from "@refinedev/core";
 
 const { Text } = Typography;
 const { useToken } = theme;
@@ -45,6 +47,8 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
         [handleResize]
     );
 
+    const { mutate: logout } = useLogout();
+
     useEffect(() => {
         window.addEventListener('resize', debouncedHandleResize);
         return () => window.removeEventListener('resize', debouncedHandleResize);
@@ -67,7 +71,7 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
     const navTabs = [
         { label: "Test Summary", key: "testsummaries", path: "/testsummaries" },
         { label: "Test Run", key: "testruns", path: "/testruns" },
-        
+
         // add more tabs here as needed in the future
     ];
 
@@ -79,15 +83,31 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
         onClick: () => navigate(tab.path)
     }));
 
+    // User dropdown menu items
+    const userMenuItems = [
+        {
+            key: 'preferences',
+            icon: <SettingOutlined />,
+            label: 'User Preferences',
+            onClick: () => navigate('/preferences')
+        },
+        {
+            key: 'logmeout',
+            icon: <LogoutOutlined />,
+            label: 'Logout',
+            onClick: () => logout()
+        }
+    ];
+
     const isMobile = windowWidth < 768;
 
     return (
         <AntdLayout.Header style={headerStyles}>
-            <div style={{ 
-                display: "flex", 
-                justifyContent: "space-between", 
-                alignItems: "center", 
-                padding: "0 24px", 
+            <div style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "0 24px",
                 height: "64px",
                 flexWrap: "wrap"
             }}>
@@ -100,7 +120,7 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
                     {windowWidth > 480 && (
                         <Text strong style={{ fontSize: 20, whiteSpace: "nowrap" }}>Fern Reporter</Text>
                     )}
-                    
+
                     {!isMobile ? (
                         <Menu
                             mode="horizontal"
@@ -113,7 +133,7 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
                                 label: tab.label,
                                 key: tab.key,
                             }))}
-                            style={{ 
+                            style={{
                                 borderBottom: 'none',
                                 paddingLeft: '24px',
                                 backgroundColor: token.colorBgElevated,
@@ -121,30 +141,42 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
                         />
                     ) : (
                         <Dropdown menu={{ items: mobileMenuItems }} placement="bottomLeft">
-                            <Button 
-                                type="text" 
-                                icon={<MenuOutlined />} 
+                            <Button
+                                type="text"
+                                icon={<MenuOutlined />}
                                 style={{ marginLeft: 8 }}
                             />
                         </Dropdown>
                     )}
                 </Space>
-                
+
                 <Space align="center" style={{ flexWrap: "nowrap" }}>
-                    <Switch
-                        checkedChildren="🌛"
-                        unCheckedChildren="🔆"
-                        onChange={() =>
-                            setMode(mode === "light" ? "dark" : "light")
-                        }
-                        defaultChecked={mode === "dark"}
-                    />
-                    <Space style={{ marginLeft: "8px" }} size="middle">
+                <Switch
+                    checkedChildren="🌛"
+                    unCheckedChildren="🔆"
+                    onChange={() =>
+                        setMode(mode === "light" ? "dark" : "light")
+                    }
+                    defaultChecked={mode === "dark"}
+                    checked={mode === "dark"} // ensures that both switches stay in sync since they're both controlled by the same ColorModeContext state
+                />
+                <Dropdown
+                    menu={{ items: userMenuItems }}
+                    placement="bottom"
+                    trigger={['hover']}
+                >
+                    <Space
+                        style={{ marginLeft: "2px", cursor: "pointer" }}
+                        size="middle"
+                    >
                         {user?.name && <Text strong>{user.name}</Text>}
-                        {user?.avatar && (
-                            <Avatar src={user?.avatar} alt={user?.name} />
-                        )}
+                        <Avatar
+                            src={user?.avatar || null}
+                            icon={!user?.avatar ? <UserOutlined /> : null}
+                            alt={user?.name}
+                        />
                     </Space>
+                </Dropdown>
                 </Space>
             </div>
         </AntdLayout.Header>
