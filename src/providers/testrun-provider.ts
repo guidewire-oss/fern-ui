@@ -50,3 +50,107 @@ export const testrunProvider: DataProvider = {
     // updateMany: () => { /* ... */ },
     // custom: () => { /* ... */ },
 };
+
+interface TestRun {
+    id: string;
+    test_project_name: string;
+    test_seed: string;
+    start_time: string;
+    end_time: string;
+    git_branch: string;
+    git_sha: string;
+    build_trigger_actor: string;
+    build_url: string;
+    status: string;
+    suite_runs: {
+        id: string;
+        suite_name: string;
+        start_time: string;
+        end_time: string;
+        spec_runs: {
+            id: string;
+            spec_description: string;
+            status: string;
+        }[];
+    }[];
+    project: {
+        uuid: string;
+        name: string;
+        team_name: string;
+        comment: string;
+        created_at: string;
+        updated_at: string;
+    };
+}
+
+
+export async function fetchTestRuns({
+                                        filters = {},
+                                        fields = [""],
+                                        sortBy = 'end_time',
+                                        order = 'desc'
+                                    } = {}) : Promise<TestRun[]> {
+    try {
+        const params = {
+            ...filters,
+            fields: "",
+            sort_by: sortBy,
+            order: order,
+        };
+
+        if (fields.length > 0) {
+            params.fields = fields.join(',');
+        }
+
+        const response = await axios.get(`${API_URL}/testrun/`, {
+                withCredentials: true,
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                params
+            }
+        );
+
+        return response.data;
+    } catch (error) {
+        console.error('Failed to fetch test runs:', error);
+        throw error;
+    }
+}
+
+
+export interface ProjectSummary {
+    uuid: string;
+    name: string;
+    status: string;
+    test_count: number;
+    test_passed: number;
+    test_failed: number;
+    test_skipped: number;
+    date: string;
+    git_branch: string;
+}
+
+export interface GroupedProjectsResponse {
+    group_id: number;
+    group_name: string;
+    projects: ProjectSummary[];
+}
+
+export interface PreferenceResponse {
+    cookie: string;
+    project_groups: GroupedProjectsResponse[];
+}
+
+export async function fetchProjectGroups(): Promise<GroupedProjectsResponse[]> {
+    const response = await axios.get<PreferenceResponse>(`${API_URL}/testrun/project-groups`, {
+        withCredentials: true, // Ensures cookies are included
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+    if (response.status !== 200) {
+        throw new Error("Failed to fetch preferred projects " + response.data);
+    }
+    return response.data.project_groups;
+}
