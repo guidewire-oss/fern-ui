@@ -161,7 +161,6 @@ describe('Heatmap Components', () => {
         beforeEach(() => {
             jest.clearAllMocks();
             (testrunProvider.fetchProjectGroups as jest.Mock).mockResolvedValue(mockGroupData);
-            (testrunProvider.fetchTestRuns as jest.Mock).mockResolvedValue(mockTestRunData);
         });
 
         test('fetches and processes data correctly', async () => {
