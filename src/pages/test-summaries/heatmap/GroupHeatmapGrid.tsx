@@ -24,8 +24,6 @@ export const GroupHeatmapGrid = () => {
             try {
                 const groupedProjectsResponses = await fetchProjectGroups();
 
-                console.log(groupedProjectsResponses);
-
                 const result: GroupHeatmapProps[] = []
 
                 for (const group of groupedProjectsResponses) {
@@ -51,11 +49,9 @@ export const GroupHeatmapGrid = () => {
                     }
                     result.push(groupHeatmapArgs)
                 }
-                console.log("Heatmap data fetched:", result);
                 setHeatmapData(result);
             } catch (error) {
                 message.error("Failed to fetch group data")
-                console.error("Failed to fetch heatmap data", error);
             }
         };
 

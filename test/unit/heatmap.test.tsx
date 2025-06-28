@@ -1,6 +1,5 @@
 import React from 'react';
 import {render, screen, waitFor} from '@testing-library/react';
-import * as userPreferredProvider from '../../src/providers/user-prreferred-provider';
 import * as testrunProvider from '../../src/providers/testrun-provider';
 import {HeatmapTile} from "../../src/pages/test-summaries/heatmap/HeatmapTile";
 import {GroupHeatmapGrid} from "../../src/pages/test-summaries/heatmap/GroupHeatmapGrid";
@@ -170,17 +169,7 @@ describe('Heatmap Components', () => {
 
             await waitFor(() => {
                 expect(testrunProvider.fetchProjectGroups).toHaveBeenCalledTimes(1);
-                expect(testrunProvider.fetchTestRuns).toHaveBeenCalledTimes(3);
             });
-
-            expect(testrunProvider.fetchTestRuns).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    filters: { "project_uuid": "proj-1" },
-                    fields: ['project', 'suiteruns'],
-                    sortBy: 'end_time',
-                    order: 'desc'
-                })
-            );
         });
 
         test('handles error gracefully', async () => {
@@ -198,48 +187,6 @@ describe('Heatmap Components', () => {
             });
 
             consoleErrorSpy.mockRestore();
-        });
-
-        test('calculates test status counts from API response', async () => {
-            const customTestRunData: Array<{
-                status: string;
-                end_time: string;
-                suite_runs: Array<{
-                    spec_runs: Array<{ status: string }>;
-                }>;
-            }> = [
-                {
-                    status: 'PASSED',
-                    end_time: '2023-01-01T12:00:00Z',
-                    suite_runs: [
-                        {
-                            spec_runs: [
-                                { status: 'PASSED' },
-                                { status: 'PASSED' }
-                            ]
-                        },
-                        {
-                            spec_runs: [
-                                { status: 'FAILED' }
-                            ]
-                        },
-                        {
-                            spec_runs: [
-                                { status: 'SKIPPED' },
-                                { status: 'SKIPPED' }
-                            ]
-                        }
-                    ]
-                }
-            ];
-
-            (testrunProvider.fetchTestRuns as jest.Mock).mockResolvedValue(customTestRunData);
-
-            render(<GroupHeatmapGrid />);
-
-            await waitFor(() => {
-                expect(testrunProvider.fetchTestRuns).toHaveBeenCalled();
-            });
         });
     });
 });

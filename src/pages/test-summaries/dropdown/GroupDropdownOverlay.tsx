@@ -108,6 +108,7 @@ export const GroupDropdownOverlay: React.FC<GroupDropdownOverlayProps> = ({
         >
             <Select
                 aria-label={`Project ${selectedProject?.id} group dropdown`}
+                data-testid="group-dropdown-select"
                 showSearch
                 value={selectedGroup}
                 placeholder="Select or add group"
@@ -118,7 +119,7 @@ export const GroupDropdownOverlay: React.FC<GroupDropdownOverlayProps> = ({
                 ref={selectRef}
                 notFoundContent={
                     loading ? (
-                        <Spin size="small" />
+                        <Spin size="small" data-testid="group-spinner" />
                     ) : searchValue ? (
                         <div
                             onClick={() => {

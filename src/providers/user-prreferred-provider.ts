@@ -1,10 +1,6 @@
 import axios from "axios";
 
-if (!import.meta.env.VITE_FERN_REPORTER_BASE_URL) {
-    console.error("FERN_REPORTER_BASE_URL is not set");
-}
-
-export const API_URL = import.meta.env.VITE_FERN_REPORTER_BASE_URL;
+export const API_URL = process.env.VITE_FERN_REPORTER_BASE_URL!;
 
 export interface ProjectSummary {
     uuid: string;
