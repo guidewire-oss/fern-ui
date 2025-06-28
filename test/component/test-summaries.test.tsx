@@ -1,9 +1,9 @@
 import {reportProject, testsummariesApiResponse} from "../utils/summaryDataMocks";
 import React from "react";
-import { TestSummary } from "../../src/pages/test-summaries";
+import {TestSummary} from "../../src/pages/test-summaries";
 import TestHistoryGrid from "../../src/pages/test-summaries/summary-utils";
 import {useSimpleList} from "@refinedev/antd";
-import {render, screen} from "@testing-library/react";
+import {cleanup, fireEvent, render, screen} from "@testing-library/react";
 
 jest.mock('@refinedev/antd', () => {
     const originalModule = jest.requireActual('@refinedev/antd');
@@ -13,13 +13,46 @@ jest.mock('@refinedev/antd', () => {
     };
 });
 
+jest.mock('../../src/providers/user-prreferred-provider', () => ({
+    fetchPreferredProjects: jest.fn(),
+    savePreferredProjects: jest.fn(),
+}));
+
+jest.mock('antd', () => {
+    const actualAntd = jest.requireActual('antd');
+    return {
+        ...actualAntd,
+        message: {
+            open: jest.fn(),
+            success: jest.fn(),
+            error: jest.fn(),
+            info: jest.fn(),
+            warning: jest.fn(),
+            loading: jest.fn(),
+        },
+    };
+});
+
+jest.mock('../../src/hooks/useFavorite', () => ({
+    useFavorite: jest.fn(() => ({
+        favorites: new Set(['some-uuid']),
+        toggleFavorite: jest.fn(),
+        fetchFavorites: jest.fn(),
+    })),
+}));
+
+
+
 describe('TestSummary Component Tests', () => {
     beforeEach(() => {
-        jest.clearAllMocks();
+        jest.restoreAllMocks();
+    });
+
+    afterEach(() => {
+        cleanup();
     });
 
     test('displays the title and table headers correctly', () => {
-        // Mock useSimpleList to return data
         (useSimpleList as jest.Mock).mockReturnValue({
             listProps: {
                 dataSource: [
@@ -86,4 +119,23 @@ describe('TestSummary Component Tests', () => {
         expect(screen.getByText('No test data available.')).toBeInTheDocument();
     });
 
+    test('should open group dropdown overlay when clicking "Add to group" menu item', async () => {
+        (useSimpleList as jest.Mock).mockReturnValue({
+            listProps: {
+                dataSource: [reportProject],
+                pagination: {},
+            },
+        });
+
+        render(<TestSummary/>);
+
+        const menuButton = screen.getByLabelText('Project 1 menu');
+        fireEvent.click(menuButton);
+
+        const addToGroupOption = await screen.findByText('Add to group');
+
+        fireEvent.click(addToGroupOption);
+
+        expect(await screen.findByText('Group Name')).toBeInTheDocument();
+    });
 });

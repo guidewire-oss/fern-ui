@@ -50,3 +50,39 @@ export const testrunProvider: DataProvider = {
     // updateMany: () => { /* ... */ },
     // custom: () => { /* ... */ },
 };
+
+export interface ProjectSummary {
+    uuid: string;
+    name: string;
+    status: string;
+    test_count: number;
+    test_passed: number;
+    test_failed: number;
+    test_skipped: number;
+    date: string;
+    git_branch: string;
+}
+
+export interface GroupedProjectsResponse {
+    group_id: number;
+    group_name: string;
+    projects: ProjectSummary[];
+}
+
+export interface PreferenceResponse {
+    cookie: string;
+    project_groups: GroupedProjectsResponse[];
+}
+
+export async function fetchProjectGroups(): Promise<GroupedProjectsResponse[]> {
+    const response = await axios.get<PreferenceResponse>(`${API_URL}/testrun/project-groups`, {
+        withCredentials: true, // Ensures cookies are included
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+    if (response.status !== 200) {
+        throw new Error("Failed to fetch preferred projects " + response.data);
+    }
+    return response.data.project_groups;
+}

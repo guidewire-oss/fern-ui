@@ -1,0 +1,101 @@
+.heatmap-grid-container {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+    padding: 24px 0;
+    justify-content: flex-start;
+}
+
+.heatmap-group-block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    /* Set a fixed width for consistent spacing */
+    width: 200px;
+}
+
+.group-heatmap {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center align the heatmap within the block */
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.heatmap-grid-square {
+    display: grid;
+    gap: 1px;
+    background: transparent;
+    border: none;
+    margin-bottom: 6px;
+    max-width: 100%;
+}
+
+.heatmap-label {
+    margin-top: 12px;
+    font-weight: 600;
+    font-size: 16px;
+    text-align: center;
+    /* Fixed width with text truncation */
+    width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* Add some padding for better visual appearance */
+    padding: 0 8px;
+    box-sizing: border-box;
+}
+
+.heatmap-tile {
+    width: 32px;
+    height: 32px;
+    border: 2px solid;
+    box-sizing: border-box;
+    transition: transform 0.1s ease;
+}
+
+.heatmap-tile:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 768px) {
+    .heatmap-grid-container {
+        gap: 24px;
+    }
+
+    .heatmap-group-block {
+        width: 180px;
+    }
+
+    .heatmap-label {
+        width: 180px;
+        font-size: 14px;
+    }
+
+    .heatmap-tile {
+        width: 28px;
+        height: 28px;
+    }
+}
+
+@media (max-width: 480px) {
+    .heatmap-grid-container {
+        gap: 16px;
+    }
+
+    .heatmap-group-block {
+        width: 160px;
+    }
+
+    .heatmap-label {
+        width: 160px;
+        font-size: 12px;
+    }
+
+    .heatmap-tile {
+        width: 24px;
+        height: 24px;
+    }
+}
